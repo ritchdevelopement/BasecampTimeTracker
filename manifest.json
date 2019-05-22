@@ -1,0 +1,37 @@
+{
+
+    "manifest_version": 2,
+    "name": "BasecampTimeTracker",
+    "version": "1.0",
+  
+    "description": "Adds the possibility to track times for tasks in basecamp classic.",
+  
+    "icons": {
+      "48": "icons/basecamp-48.png"
+    },
+
+    "permissions": [
+      "activeTab"
+    ],
+
+    "web_accessible_resources": [
+        "images/play_button.png",
+        "images/pause_button.png",
+        "images/delete_button.png"
+    ],
+
+    "browser_action": {
+      "default_icon": "icons/basecamp-48.png",
+      "default_title": "Basecamp",
+      "default_popup": "popup/basecamp_tt_popup.html"
+    },
+  
+    "content_scripts": [
+      {
+        "matches": ["*://*.basecamphq.com/*"],
+        "js": ["basecamp_tt.js"],
+        "css": ["basecamp_tt.css"]
+      }
+    ]
+  
+  }

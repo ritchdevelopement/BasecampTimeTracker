@@ -1,0 +1,15 @@
+html, body {
+  width: auto;
+  font-family: 'Arial', sans-serif;
+}
+
+.timer.pause {
+	background-image: url("../images/pause_button.png");
+	background-position: center center;
+	width: 25px;
+	height: 25px;
+	background-size: 100% auto;
+	background-repeat: no-repeat;
+	display: inline-block;
+	cursor: pointer;
+}
