@@ -3,8 +3,7 @@ html, body {
   font-family: 'Arial', sans-serif;
 }
 
-.timer.pause {
-	background-image: url("../images/pause_button.png");
+.timer {
 	background-position: center center;
 	width: 25px;
 	height: 25px;
@@ -12,4 +11,17 @@ html, body {
 	background-repeat: no-repeat;
 	display: inline-block;
 	cursor: pointer;
+}
+
+.timer:hover {
+	filter: grayscale(75%);
+	transition: 0.5s;
+}
+
+.timer.pause {
+	background-image: url("../images/pause_button.png");
+}
+
+.timer.remove {
+	background-image: url("../images/delete_button.png");
 }

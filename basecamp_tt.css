@@ -23,3 +23,8 @@ body.todos div.item div.controls {
 body.todos div.list div.item div.controls a.time_tracking_control span.sprite {
 	padding-top: 25px !important;
 }
+
+.timer:hover {
+	filter: grayscale(75%);
+	transition: 0.5s;
+}
