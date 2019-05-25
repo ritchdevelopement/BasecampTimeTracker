@@ -26,8 +26,8 @@
                     <td><span class="timer remove"></span></td>
                 </tr>`;
                 popupTaskTable.insertAdjacentHTML("beforeend", taskHTML);
-                basecamp_tt_popup.taskTimerStart(task);
                 basecamp_tt_popup.taskTimerControl(task);
+                basecamp_tt_popup.taskTimerStart(task);
             });
         },
         showTaskRemoveButton: function(tasks) {
@@ -47,32 +47,46 @@
             });
         },
         showTaskTimer: function(task) {
-            var taskTime, s, m, h;
-            taskTime = basecamp_tt_popup.getTaskTime(task);
-            s = Math.floor(taskTime/1000) % 60;
-            m = Math.floor(taskTime/(1000*60)) % 60;
-            h = Math.floor(taskTime/(1000*60*60));
-            return (h >= 10 ? "" : "0" ) + h + ":" + (m >= 10 ? "" : "0" ) + m + ":" + (s >= 10 ? "" : "0") + s;
+            var s, m, h, taskTime, taskStoragePromise, tasks, i, taskTimerId;
+            taskStoragePromise = basecamp_tt_popup.getTaskStorage();
+                taskStoragePromise.then(function(res) {
+                    tasks = res.taskStorage;
+                    taskTimerId = document.querySelector("#task-timer-" + task.id);
+                    for(i in tasks) {
+                        if(tasks[i].id == task.id) {
+                            taskTime = tasks[i].time;;
+                        }
+                    }
+                    s = taskTime%60;
+                    m = Math.floor(taskTime/60) % 60;
+                    h = Math.floor(taskTime/3600);
+                    taskTimerId.innerHTML = (h >= 10 ? "" : "0" ) + h + ":" + (m >= 10 ? "" : "0" ) + m + ":" + (s >= 10 ? "" : "0") + s;
+                }).catch(function(err) {
+                    console.log(err);
+            });
         },
         taskTimerStart: function(task) {
-            var taskControlImg, taskTimerId;
-            taskControlImg = document.querySelector("#task-control-" + task.id + " span");
-            taskTimerId = document.querySelector("#task-timer-" + task.id);
-            
+            var taskTimerId, s, m, h, taskTime, taskStoragePromise, tasks, i;
             return setInterval(function() {
-                if(!taskControlImg.classList.contains("pause")) {
-                    if(document.body.contains(taskTimerId)) {
-                        taskTimerId.innerHTML = basecamp_tt_popup.showTaskTimer(task);
+                taskStoragePromise = basecamp_tt_popup.getTaskStorage();
+                taskStoragePromise.then(function(res) {
+                    tasks = res.taskStorage;
+                    taskTimerId = document.querySelector("#task-timer-" + task.id);
+                    for(i in tasks) {
+                        if(tasks[i].id == task.id) {
+                            taskTime = tasks[i].time;;
+                        }
                     }
-                }
+                    s = taskTime%60;
+                    m = Math.floor(taskTime/60) % 60;
+                    h = Math.floor(taskTime/3600);
+                    if(document.body.contains(taskTimerId)) {
+                        taskTimerId.innerHTML = (h >= 10 ? "" : "0" ) + h + ":" + (m >= 10 ? "" : "0" ) + m + ":" + (s >= 10 ? "" : "0") + s;
+                    }
+                }).catch(function(err) {
+                    console.log(err);
+                });
             }, 1000);
-        },
-        getTaskTime: function(task) {
-            if(task.paused) {
-                return task.totalTime;
-            } else if(!task.paused) {
-                return Date.now() - task.startTime;
-            }
         },
         taskTimerControl: function(task) {
             var taskControl, taskControlImg;
@@ -89,18 +103,16 @@
             });
         },
         taskTimerSaveState: function (task, boolPaused) {
-            var taskStoragePromise, tasks, i, taskTime;
-            taskTime = Date.now() - task.startTime;
+            var taskStoragePromise, tasks, i;
             taskStoragePromise = basecamp_tt_popup.getTaskStorage();
             taskStoragePromise.then(function(res) {
                 tasks = res.taskStorage;
                 for(i in tasks) {
                     if(tasks[i].id == task.id) {
                         tasks[i].paused = boolPaused;
-                        tasks[i].totalTime = taskTime;
                     }
-                    basecamp_tt_popup.setTaskStorage(tasks);
                 }
+                basecamp_tt_popup.setTaskStorage(tasks);
             }).catch(function(err) {
                 console.log(err);
             });

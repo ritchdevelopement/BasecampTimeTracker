@@ -3,13 +3,12 @@
     "use strict";
     var basecamp_tt = {
         init: function() {
-            basecamp_tt.initTaskStorage();
             basecamp_tt.addTimerButtonToTasks();
             basecamp_tt.addTaskToTimeTracker();
         },
         addTimerButtonToTasks: function() {
             var controlsDiv, timerButtonHTML;
-            controlsDiv = document.querySelectorAll(".controls");
+            controlsDiv = document.querySelectorAll(".list .controls");
             timerButtonHTML = "<span class='timer'></span>";
             controlsDiv.forEach(function(c) {
                 c.insertAdjacentHTML("beforeend", timerButtonHTML);
@@ -28,7 +27,6 @@
                         tasks = res.taskStorage;
                         tasks.push(basecamp_tt.createTask(timerExtractedNum, timerTaskName));
                         basecamp_tt.setTaskStorage(tasks);
-                        console.log(tasks);
                     });
                 };
             }).catch(function(err) {
@@ -41,19 +39,10 @@
             task = {
                 id: taskNumber,
                 name: taskName,
-                startTime: Date.now(),
-                endTime: 0,
-                totalTime: 0,
+                time: 0,
                 paused: false
             }
             return task;
-        },
-        initTaskStorage: function() {
-            var taskStoragePromise;
-            taskStoragePromise = basecamp_tt.getTaskStorage();
-            taskStoragePromise.then(function(res) {
-                if(!res.taskStorage) basecamp_tt.setTaskStorage([]);
-            });
         },
         getTaskStorage: function() {
             return browser.storage.local.get("taskStorage");

@@ -3,6 +3,10 @@ html, body {
   font-family: 'Arial', sans-serif;
 }
 
+th {
+	text-align: left;
+}
+
 .timer {
 	background-image: url("../images/pause_button.png");
 	background-position: center center;

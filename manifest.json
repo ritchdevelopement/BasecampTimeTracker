@@ -1,12 +1,16 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 1,
+  "author": "Rami El Kudr",
   "name": "BasecampTimeTracker",
+  "description": "Adds the possibility to track times for tasks in basecamp classic.",
+  "homepage_url": "https://github.com/ritchdevelopement/BasecampTimeTracker",
   "version": "1.0",
 
-  "description": "Adds the possibility to track times for tasks in basecamp classic.",
+
   "browser_specific_settings": {
     "gecko": {
-      "id": "addon@example.com"
+      "id": "ritchdevelopement@github.com",
+      "strict_min_version": "48.0"
     }
   },
   
@@ -15,7 +19,6 @@
   },
 
   "permissions": [
-    "activeTab",
     "unlimitedStorage",
     "storage"
   ],
@@ -28,8 +31,12 @@
 
   "browser_action": {
     "default_icon": "icons/basecamp-48.png",
-    "default_title": "Basecamp",
+    "default_title": "Basecamp Time Tracker",
     "default_popup": "popup/basecamp_tt_popup.html"
+  },
+
+  "background": {
+    "scripts": ["background/basecamp_tt_background.js"]
   },
 
   "content_scripts": [
