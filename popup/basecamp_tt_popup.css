@@ -4,6 +4,7 @@ html, body {
 }
 
 .timer {
+	background-image: url("../images/pause_button.png");
 	background-position: center center;
 	width: 25px;
 	height: 25px;
@@ -19,7 +20,7 @@ html, body {
 }
 
 .timer.pause {
-	background-image: url("../images/pause_button.png");
+	background-image: url("../images/play_button.png");
 }
 
 .timer.remove {
