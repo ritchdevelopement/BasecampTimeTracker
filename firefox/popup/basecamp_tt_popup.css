@@ -1,7 +1,9 @@
 html, body {
   width: auto;
   font-family: 'Arial', sans-serif;
+  font-size: 14px;
 }
+table { min-width: 250px; }
 th { text-align: left; }
 tbody { border-bottom: 1px solid black; }
 .task-name { 

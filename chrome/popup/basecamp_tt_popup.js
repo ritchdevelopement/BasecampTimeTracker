@@ -4,15 +4,13 @@
         init: function() {
             basecamp_tt_popup.showTasksInPopup();
             basecamp_tt_popup.taskAddButton();
+            basecamp_tt_popup.showVersion();
         },
         showTasksInPopup: function() {
-            var taskStoragePromise, tasks;
-            taskStoragePromise = basecamp_tt_popup.getTaskStorage();
-            taskStoragePromise.then(function(res) {
+            var tasks;
+            chrome.storage.local.get("taskStorage", function(res) {
                 tasks = res.taskStorage;
                 basecamp_tt_popup.showTask(tasks);
-            }).catch(function(err) {
-                console.log(err);
             });
         },
         showTask: function(tasks) {
@@ -32,32 +30,33 @@
             });
         },
         showTaskTimer: function(task) {
-            var s, m, h, taskTime, taskStoragePromise, tasks, i, taskTimerId;
-            taskStoragePromise = basecamp_tt_popup.getTaskStorage();
-                taskStoragePromise.then(function(res) {
-                    tasks = res.taskStorage;
-                    taskTimerId = document.querySelector("#task-timer-" + task.id);
-                    for(i in tasks) {
-                        if(tasks[i].id === task.id) {
-                            taskTime = tasks[i].time;;
-                        }
+            var s, m, h, taskTime, tasks, i, taskTimerId;
+            chrome.storage.local.get("taskStorage", function(res) {
+                tasks = res.taskStorage;
+                taskTimerId = document.querySelector("#task-timer-" + task.id);
+                for(i in tasks) {
+                    if(tasks[i].id === task.id) {
+                        taskTime = tasks[i].time;;
                     }
-                    s = taskTime%60;
-                    m = Math.floor(taskTime/60) % 60;
-                    h = Math.floor(taskTime/3600);
-                    taskTimerId.innerHTML = (h >= 10 ? "" : "0" ) + h + ":" + (m >= 10 ? "" : "0" ) + m + ":" + (s >= 10 ? "" : "0") + s;
-                }).catch(function(err) {
-                    console.log(err);
+                }
+                s = taskTime%60;
+                m = Math.floor(taskTime/60) % 60;
+                h = Math.floor(taskTime/3600);
+                taskTimerId.innerHTML = (h >= 10 ? "" : "0" ) + h + ":" + (m >= 10 ? "" : "0" ) + m + ":" + (s >= 10 ? "" : "0") + s;
             });
         },
+        showVersion: function() {
+            var version;
+            version = document.querySelector("#version-text");
+            version.textContent = "Version: " + chrome.runtime.getManifest().version;
+        },
         taskRemoveButton: function(task) {
-            var timerRemoveButton, i, taskStoragePromise, tasks, taskToRemove, i;
+            var timerRemoveButton, i, tasks, taskToRemove, i;
             timerRemoveButton = document.querySelector("#task-timer-remove-" + task.id);
             timerRemoveButton.addEventListener("click", function() {
                 taskToRemove = document.getElementById(task.id);
                 taskToRemove.remove();
-                taskStoragePromise = basecamp_tt_popup.getTaskStorage();
-                taskStoragePromise.then(function(res) {
+                chrome.storage.local.get("taskStorage", function(res) {
                     tasks = res.taskStorage;
                     for(i in tasks) {
                         if(tasks[i].id === task.id) {
@@ -69,10 +68,9 @@
             });
         },
         taskTimerStart: function(task) {
-            var taskTimerId, s, m, h, taskTime, taskStoragePromise, tasks, i;
+            var taskTimerId, s, m, h, taskTime, tasks, i;
             return setInterval(function() {
-                taskStoragePromise = basecamp_tt_popup.getTaskStorage();
-                taskStoragePromise.then(function(res) {
+                chrome.storage.local.get("taskStorage", function(res) {
                     tasks = res.taskStorage;
                     taskTimerId = document.querySelector("#task-timer-" + task.id);
                     for(i in tasks) {
@@ -86,8 +84,6 @@
                     if(document.body.contains(taskTimerId)) {
                         taskTimerId.innerHTML = (h >= 10 ? "" : "0" ) + h + ":" + (m >= 10 ? "" : "0" ) + m + ":" + (s >= 10 ? "" : "0") + s;
                     }
-                }).catch(function(err) {
-                    console.log(err);
                 });
             }, 1000);
         },
@@ -108,9 +104,8 @@
             });
         },
         taskTimerSaveState: function (task, boolPaused) {
-            var taskStoragePromise, tasks, i;
-            taskStoragePromise = basecamp_tt_popup.getTaskStorage();
-            taskStoragePromise.then(function(res) {
+            var tasks, i;
+            chrome.storage.local.get("taskStorage", function(res) {
                 tasks = res.taskStorage;
                 for(i in tasks) {
                     if(tasks[i].id === task.id) {
@@ -118,12 +113,10 @@
                     }
                 }
                 basecamp_tt_popup.setTaskStorage(tasks);
-            }).catch(function(err) {
-                console.log(err);
             });
         },
         taskAddButton: function() {
-            var messageArray, addButton, inputTaskName, taskId, taskName, popupTaskTable, taskHTML, task, taskStoragePromise, tasks;
+            var messageArray, addButton, inputTaskName, taskId, taskName, popupTaskTable, taskHTML, task, tasks;
             popupTaskTable = document.querySelector("#popup-task-table tbody");
             addButton = document.querySelector("#add-task-button");
             inputTaskName = document.querySelector("#input-task-name");
@@ -146,8 +139,7 @@
                 basecamp_tt_popup.taskTimerControl(task);
                 basecamp_tt_popup.taskTimerStart(task);
                 basecamp_tt_popup.taskRemoveButton(task);
-                taskStoragePromise = basecamp_tt_popup.getTaskStorage();
-                taskStoragePromise.then(function(res) {
+                chrome.storage.local.get("taskStorage", function(res) {
                     tasks = res.taskStorage;
                     tasks.push(task);
                     basecamp_tt_popup.setTaskStorage(tasks);
@@ -162,10 +154,9 @@
             }); 
         },
         randomTaskId: function() {
-            var randomId, taskStoragePromise, tasks, i;
+            var randomId, tasks, i;
             randomId = Math.floor(Math.random() * (999999999 - 100000000 + 1) + 100000000);
-            taskStoragePromise = basecamp_tt_popup.getTaskStorage();
-            taskStoragePromise.then(function(res) {
+            chrome.storage.local.get("taskStorage", function(res) {
                 tasks = res.taskStorage;
                 for(i in tasks) {
                     if(tasks[i].id === randomId) {
@@ -185,12 +176,8 @@
             }
             return task;
         },
-        getTaskStorage: function() {
-            return browser.storage.local.get("taskStorage");
-        },
         setTaskStorage: function(taskArray) {
-            browser.storage.local.set({
-                taskStorage: taskArray
+            chrome.storage.local.set({taskStorage: taskArray}, function() {
             });
         }
     }
