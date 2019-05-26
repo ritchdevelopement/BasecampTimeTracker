@@ -25,3 +25,24 @@ tbody { border-bottom: 1px solid black; }
 	filter: grayscale(75%);
 	transition: 0.5s;
 }
+.logo { 
+	float: left; 
+	width: 45px;
+	margin-right: 10px;
+}
+.logo-text { 
+	font-size: 15px;
+	line-height: 15px;
+	margin-bottom: 0; 
+}
+.popup-header {
+	border-bottom: 3px solid #72b740;
+	width: 126px;
+	margin: 0px auto;
+	padding-bottom: 5px;
+}
+.popup-footer { text-align: center; }
+.version-text {
+	text-align: center;
+	font-size: 10px;
+}

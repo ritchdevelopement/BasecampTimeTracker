@@ -7,11 +7,11 @@
             basecamp_tt.addTaskToTimeTracker();
         },
         addTimerButtonToTasks: function() {
-            var controlsDiv, timerButtonHTML;
-            controlsDiv = document.querySelectorAll(".list .controls");
+            var controlDivs, timerButtonHTML;
+            controlDivs = document.querySelectorAll(".list .controls");
             timerButtonHTML = "<span class='icon add'></span>";
-            controlsDiv.forEach(function(c) {
-                c.insertAdjacentHTML("beforeend", timerButtonHTML);
+            controlDivs.forEach(function(controlDiv) {
+                controlDiv.insertAdjacentHTML("beforeend", timerButtonHTML);
             });
         },
         addTaskToTimeTracker: function() {

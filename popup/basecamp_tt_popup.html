@@ -5,8 +5,11 @@
     <link rel="stylesheet" href="basecamp_tt_popup.css"/>
   </head>
 <body>
-  <div id="popup-header"></div>
-  <div id="popup-content">
+  <div class="popup-header">
+    <img class="logo" src="../icons/basecamp-48.png" width="40px"/>
+    <p class="logo-text">Basecamp<br/>Time<br/>Tracker</p>
+  </div>
+  <div class="popup-content">
     <table cellspacing="10" id="popup-task-table">
       <thead>
         <tr>
@@ -25,6 +28,9 @@
           </tr>
         </tfoot>
     </table>
+  </div>
+  <div class="popup-footer">
+    <span class="version-text">Version: 1.1.0</span>
   </div>
   <script src="basecamp_tt_popup.js"></script>
 </body>
