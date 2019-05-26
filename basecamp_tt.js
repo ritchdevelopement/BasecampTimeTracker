@@ -9,23 +9,29 @@
         addTimerButtonToTasks: function() {
             var controlsDiv, timerButtonHTML;
             controlsDiv = document.querySelectorAll(".list .controls");
-            timerButtonHTML = "<span class='timer'></span>";
+            timerButtonHTML = "<span class='icon add'></span>";
             controlsDiv.forEach(function(c) {
                 c.insertAdjacentHTML("beforeend", timerButtonHTML);
             });
         },
         addTaskToTimeTracker: function() {
-            var timerButtons, timerId, timerExtractedNum, timerTaskName, tasks, taskStoragePromise;
-            timerButtons = document.querySelectorAll(".timer");
-            timerButtons.forEach(function(t) {
-                t.onclick = function() {
+            var addButtons, taskId, taskExtractedNum, taskName, tasks, taskStoragePromise, i;
+            addButtons = document.querySelectorAll(".icon");
+            addButtons.forEach(function(addButton) {
+                addButton.onclick = function() {
+                    taskId = addButton.parentNode.nextElementSibling.id;
+                    taskExtractedNum = taskId.match(/\d+/g).map(Number)[0];
+                    taskName = document.querySelector("#item_wrap_" + taskExtractedNum).textContent;
                     taskStoragePromise = basecamp_tt.getTaskStorage();
                     taskStoragePromise.then(function(res) {
-                        timerId = t.parentNode.nextElementSibling.id;
-                        timerExtractedNum = timerId.match(/\d+/g).map(Number)[0];
-                        timerTaskName = document.querySelector("#item_wrap_" + timerExtractedNum).textContent;
                         tasks = res.taskStorage;
-                        tasks.push(basecamp_tt.createTask(timerExtractedNum, timerTaskName));
+                        for(i in tasks) {
+                            if(tasks[i].id === taskExtractedNum) {
+                                alert("A Task with this id is already added to the time tracker!");
+                                return;
+                            }
+                        }
+                        tasks.push(basecamp_tt.createTaskObject(taskExtractedNum, taskName));
                         basecamp_tt.setTaskStorage(tasks);
                     });
                 };
@@ -34,10 +40,10 @@
             });
            
         },
-        createTask: function(taskNumber, taskName) {
+        createTaskObject: function(taskId, taskName) {
             var task;
             task = {
-                id: taskNumber,
+                id: taskId,
                 name: taskName,
                 time: 0,
                 paused: false

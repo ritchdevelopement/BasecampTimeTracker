@@ -2,13 +2,13 @@ html, body {
   width: auto;
   font-family: 'Arial', sans-serif;
 }
-
-th {
-	text-align: left;
+th { text-align: left; }
+tbody { border-bottom: 1px solid black; }
+.task-name { 
+	width: 100%;
+	height: 20px;
 }
-
-.timer {
-	background-image: url("../images/pause_button.png");
+.icon {
 	background-position: center center;
 	width: 25px;
 	height: 25px;
@@ -17,16 +17,11 @@ th {
 	display: inline-block;
 	cursor: pointer;
 }
-
-.timer:hover {
+.icon.pause { background-image: url("../images/pause_button.png"); }
+.icon.play { background-image: url("../images/play_button.png"); }
+.icon.remove { background-image: url("../images/remove_button.png"); }
+.icon.add { background-image: url("../images/add_button.png"); }
+.icon:hover {
 	filter: grayscale(75%);
 	transition: 0.5s;
-}
-
-.timer.pause {
-	background-image: url("../images/play_button.png");
-}
-
-.timer.remove {
-	background-image: url("../images/delete_button.png");
 }
