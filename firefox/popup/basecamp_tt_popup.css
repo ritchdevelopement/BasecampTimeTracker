@@ -48,3 +48,7 @@ tbody { border-bottom: 1px solid black; }
 	text-align: center;
 	font-size: 10px;
 }
+.task-text {
+	cursor: pointer;
+	color: #72b740;
+}

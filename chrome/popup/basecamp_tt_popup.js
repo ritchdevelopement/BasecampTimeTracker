@@ -20,13 +20,14 @@
                 taskHTML = `<tr id="${task.id}" class="task">
                     <td id="task-control-${task.id}"><span class="icon ${task.paused?'play':'pause'}"></span></td>
                     <td id="task-timer-${task.id}">${basecamp_tt_popup.showTaskTimer(task)}</td>
-                    <td>${task.name}</td>
+                    <td id="task-url-${task.id}" ${task.url?"class='task-text'":""}>${task.name}</td>
                     <td id="task-timer-remove-${task.id}"><span class="icon remove"></span></td>
                 </tr>`;
                 popupTaskTable.insertAdjacentHTML("beforeend", taskHTML);
                 basecamp_tt_popup.taskRemoveButton(task)
                 basecamp_tt_popup.taskTimerControl(task);
                 basecamp_tt_popup.taskTimerStart(task);
+                basecamp_tt_popup.taskTimerOpenUrl(task);
             });
         },
         showTaskTimer: function(task) {
@@ -102,6 +103,15 @@
                     taskControlImg.classList.remove("pause");
                 }
             });
+        },
+        taskTimerOpenUrl: function(task) {
+            var taskText;
+            taskText = document.querySelector("#task-url-" + task.id);
+            if(task.url) {
+                taskText.addEventListener("click", function() {
+                    chrome.tabs.create({url: task.url});
+                });
+            }
         },
         taskTimerSaveState: function (task, boolPaused) {
             var tasks, i;
