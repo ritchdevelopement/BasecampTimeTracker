@@ -53,8 +53,10 @@
             chrome.storage.local.get("taskStorage", function(res) {
                 tasks = res.taskStorage;
                 for(i in tasks) {
-                    taskElement = document.querySelector("body.todos #item_" + tasks[i].id);
-                    taskElement.style.backgroundImage = "linear-gradient(to right, #72b740, white 1.5%)";
+                    if(tasks[i].url) {
+                        taskElement = document.querySelector("body.todos #item_" + tasks[i].id);
+                        taskElement.style.backgroundImage = "linear-gradient(to right, #72b740, white 1.5%)";
+                    }
                 }
             });
         },
