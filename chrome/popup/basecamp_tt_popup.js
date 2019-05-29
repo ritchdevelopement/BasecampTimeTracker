@@ -20,7 +20,7 @@
                 taskHTML = `<tr id="${task.id}" class="task">
                     <td id="task-control-${task.id}"><span class="icon ${task.paused?'play':'pause'}"></span></td>
                     <td id="task-timer-${task.id}">${basecamp_tt_popup.showTaskTimer(task)}</td>
-                    <td id="task-url-${task.id}" ${task.url?"class='task-text'":""}>${task.name}</td>
+                    <td id="task-url-${task.id}" class="task-text${task.url?"":" no-link"}">${task.name}</td>
                     <td id="task-timer-remove-${task.id}"><span class="icon remove"></span></td>
                 </tr>`;
                 popupTaskTable.insertAdjacentHTML("beforeend", taskHTML);

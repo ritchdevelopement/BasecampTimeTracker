@@ -51,4 +51,9 @@ tbody { border-bottom: 1px solid black; }
 .task-text {
 	cursor: pointer;
 	color: #72b740;
+	white-space: nowrap;
+}
+.no-link {
+	cursor: inherit;
+	color: inherit;
 }

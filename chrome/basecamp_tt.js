@@ -25,7 +25,7 @@
         },
         addTaskToTimeTracker: function() {
             var addButtons, taskId, taskExtractedNum, taskName, tasks, i, taskUrl, taskItem;
-            addButtons = document.querySelectorAll(".icon");
+            addButtons = document.querySelectorAll(".icon.add");
             addButtons.forEach(function(addButton) {
                 addButton.onclick = function() {
                     taskId = addButton.parentNode.nextElementSibling.id;
