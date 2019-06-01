@@ -4,7 +4,7 @@
   "name": "BasecampTimeTracker",
   "description": "Adds the possibility to track times for tasks in basecamp classic.",
   "homepage_url": "https://github.com/ritchdevelopement",
-  "version": "1.2.2",
+  "version": "1.3.1",
   
   "icons": {
     "48": "icons/basecamp-48.png"
@@ -19,7 +19,8 @@
     "images/pause_button.png",
     "images/remove_button.png",
     "images/add_button.png",
-    "images/minus_button.png"
+    "images/minus_button.png",
+    "basecamp_tt.js"
   ],
 
   "browser_action": {
