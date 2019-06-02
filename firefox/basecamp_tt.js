@@ -84,35 +84,35 @@
         onMutationAddTimerButtonToTask: function() {
             var target, observer, config, controlDiv, timerButtonHTML;
             config = { childList: true, subtree: true };
-            if(document.body.contains(document.querySelector("body.todos .innercol"))) {
-                target = document.querySelector("body.todos .innercol");
-            }
-            observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    if(mutation.target.classList.contains("completed_items_todo_list")) {
-                        controlDiv = mutation.addedNodes[0].childNodes[1].childNodes[3];
-                        timerButtonHTML = "<span class='icon add'></span>";
-                        controlDiv.insertAdjacentHTML("beforeend", timerButtonHTML);
-                        basecamp_tt.addTaskToTimeTracker();
-                        basecamp_tt.addMarkForTrackedTasks();
-                    } else if(mutation.target.classList.contains("items") && mutation.addedNodes.length !== 0) {
-                        controlDiv = mutation.addedNodes[1].childNodes[1].childNodes[3];
-                        timerButtonHTML = "<span class='icon add'></span>";
-                        controlDiv.insertAdjacentHTML("beforeend", timerButtonHTML);
-                        basecamp_tt.addTaskToTimeTracker();
-                        basecamp_tt.addMarkForTrackedTasks();
-                    } else if(mutation.target.classList.contains("items") && mutation.addedNodes.length === 0 && mutation.nextSibling) {
-                        controlDiv = mutation.nextSibling.childNodes[1].childNodes[3];
-                        if(!controlDiv.childNodes[5]) {
+            if(document.body.contains(document.querySelector("body.todos .layout .innercol"))) {
+                target = document.querySelector("body.todos .layout .innercol");
+                observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if(mutation.target.classList.contains("completed_items_todo_list")) {
+                            controlDiv = mutation.addedNodes[0].childNodes[1].childNodes[3];
                             timerButtonHTML = "<span class='icon add'></span>";
                             controlDiv.insertAdjacentHTML("beforeend", timerButtonHTML);
                             basecamp_tt.addTaskToTimeTracker();
                             basecamp_tt.addMarkForTrackedTasks();
+                        } else if(mutation.target.classList.contains("items") && mutation.addedNodes.length !== 0) {
+                            controlDiv = mutation.addedNodes[1].childNodes[1].childNodes[3];
+                            timerButtonHTML = "<span class='icon add'></span>";
+                            controlDiv.insertAdjacentHTML("beforeend", timerButtonHTML);
+                            basecamp_tt.addTaskToTimeTracker();
+                            basecamp_tt.addMarkForTrackedTasks();
+                        } else if(mutation.target.classList.contains("items") && mutation.addedNodes.length === 0 && mutation.nextSibling) {
+                            controlDiv = mutation.nextSibling.childNodes[1].childNodes[3];
+                            if(!controlDiv.childNodes[5]) {
+                                timerButtonHTML = "<span class='icon add'></span>";
+                                controlDiv.insertAdjacentHTML("beforeend", timerButtonHTML);
+                                basecamp_tt.addTaskToTimeTracker();
+                                basecamp_tt.addMarkForTrackedTasks();
+                            }
                         }
-                    }
-                });    
-            });
-            observer.observe(target, config);
+                    });    
+                });
+                observer.observe(target, config);
+            }
         },
         createTaskObject: function(taskId, taskName, taskUrl) {
             var task;

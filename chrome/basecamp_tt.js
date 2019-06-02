@@ -86,10 +86,8 @@
         onMutationAddTimerButtonToTask: function() {
             var target, observer, config, controlDiv, timerButtonHTML;
             config = { childList: true, subtree: true };
-            if(document.body.contains(document.querySelector("body.todos .innercol"))) {
-                if(document.body.contains(document.querySelector("body.todos .innercol"))) {
-                    target = document.querySelector("body.todos .innercol");
-                }
+            if(document.body.contains(document.querySelector("body.todos .layout .innercol"))) {
+                target = document.querySelector("body.todos .layout .innercol");
                 observer = new MutationObserver(function(mutations) {
                     mutations.forEach(function(mutation) {
                         if(mutation.target.classList.contains("completed_items_todo_list") && mutation.addedNodes.length !== 0) {
