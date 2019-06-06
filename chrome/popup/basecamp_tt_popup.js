@@ -70,23 +70,21 @@
         },
         taskTimerStart: function(task) {
             var taskTimerId, s, m, h, taskTime, tasks, i;
-            return setInterval(function() {
-                chrome.storage.local.get("taskStorage", function(res) {
-                    tasks = res.taskStorage;
-                    taskTimerId = document.querySelector("#task-timer-" + task.id);
-                    for(i in tasks) {
-                        if(tasks[i].id === task.id) {
-                            taskTime = tasks[i].time;;
-                        }
+            chrome.storage.onChanged.addListener(function(changes, area) {
+                tasks = changes.taskStorage.newValue;
+                taskTimerId = document.querySelector("#task-timer-" + task.id);
+                for(i in tasks) {
+                    if(tasks[i].id === task.id) {
+                        taskTime = tasks[i].time;;
                     }
-                    s = taskTime%60;
-                    m = Math.floor(taskTime/60) % 60;
-                    h = Math.floor(taskTime/3600);
-                    if(document.body.contains(taskTimerId)) {
-                        taskTimerId.innerHTML = (h >= 10 ? "" : "0" ) + h + ":" + (m >= 10 ? "" : "0" ) + m + ":" + (s >= 10 ? "" : "0") + s;
-                    }
-                });
-            }, 1000);
+                }
+                s = taskTime%60;
+                m = Math.floor(taskTime/60) % 60;
+                h = Math.floor(taskTime/3600);
+                if(document.body.contains(taskTimerId)) {
+                    taskTimerId.innerHTML = (h >= 10 ? "" : "0" ) + h + ":" + (m >= 10 ? "" : "0" ) + m + ":" + (s >= 10 ? "" : "0") + s;
+                }
+            });
         },
         taskTimerControl: function(task) {
             var taskControl, taskControlImg;

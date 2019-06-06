@@ -21,7 +21,7 @@
         addTimerImagesToButton: function() {
             var imgURL;
             imgURL = chrome.runtime.getURL("images/add_button.png");
-            document.querySelectorAll(".icon.add").forEach(function(addButton) {
+            document.querySelectorAll(".list.list_with_time_tracking .controls .icon.add").forEach(function(addButton) {
                 addButton.style.backgroundImage = "url('" + imgURL + "')";
             })
         },
