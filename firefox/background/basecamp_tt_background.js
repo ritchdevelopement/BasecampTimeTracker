@@ -27,13 +27,13 @@
         setActiveTimerBadgeText: function() {
             var taskStorage, activeTimer, i;
             browser.browserAction.setBadgeText({text: "0"});
+            browser.browserAction.setBadgeBackgroundColor({color: "#FF0000"});
+            browser.browserAction.setBadgeTextColor({color: "#FFF"});
             browser.storage.onChanged.addListener(function(changes, area) {
                 activeTimer = 0;
                 taskStorage = changes.taskStorage.newValue;
                 for(i in taskStorage) {
-                    if(!taskStorage[i].paused){ 
-                        activeTimer += 1;
-                    }
+                    activeTimer += 1;
                 }
                 browser.browserAction.setBadgeText({text: activeTimer.toString()});
             });
