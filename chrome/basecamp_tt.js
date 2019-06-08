@@ -90,13 +90,15 @@
                 target = document.querySelector("body.todos .layout .innercol");
                 observer = new MutationObserver(function(mutations) {
                     mutations.forEach(function(mutation) {
-                        if(mutation.target.classList.contains("completed_items_todo_list") && mutation.addedNodes.length !== 0) {
-                            controlDiv = mutation.addedNodes[0].childNodes[1].childNodes[3];
-                            timerButtonHTML = "<span class='icon add'></span>";
-                            controlDiv.insertAdjacentHTML("beforeend", timerButtonHTML);
-                            basecamp_tt.addTimerImagesToButton();
-                            basecamp_tt.addTaskToTimeTracker();
-                            basecamp_tt.addMarkForTrackedTasks();
+                        if(mutation.target.classList.contains("completed_items_todo_list") && mutation.addedNodes.length !== 0 && mutation.addedNodes[0].nodeType === 1) {
+                            if(mutation.addedNodes[0].childNodes[1]) {
+                                controlDiv = mutation.addedNodes[0].childNodes[1].childNodes[3];
+                                timerButtonHTML = "<span class='icon add'></span>";
+                                controlDiv.insertAdjacentHTML("beforeend", timerButtonHTML);
+                                basecamp_tt.addTimerImagesToButton();
+                                basecamp_tt.addTaskToTimeTracker();
+                                basecamp_tt.addMarkForTrackedTasks();
+                            }
                         } else if(mutation.target.classList.contains("items") && mutation.addedNodes.length !== 0 && mutation.addedNodes[1]) {
                             controlDiv = mutation.addedNodes[1].childNodes[1].childNodes[3];
                             timerButtonHTML = "<span class='icon add'></span>";

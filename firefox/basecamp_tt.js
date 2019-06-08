@@ -88,8 +88,14 @@
                 target = document.querySelector("body.todos .layout .innercol");
                 observer = new MutationObserver(function(mutations) {
                     mutations.forEach(function(mutation) {
-                        if(mutation.target.classList.contains("completed_items_todo_list")) {
+                        if(mutation.target.classList.contains("completed_items_todo_list") && mutation.addedNodes.length === 2) {
                             controlDiv = mutation.addedNodes[0].childNodes[1].childNodes[3];
+                            timerButtonHTML = "<span class='icon add'></span>";
+                            controlDiv.insertAdjacentHTML("beforeend", timerButtonHTML);
+                            basecamp_tt.addTaskToTimeTracker();
+                            basecamp_tt.addMarkForTrackedTasks();
+                        } else if(mutation.target.classList.contains("completed_items_todo_list") && mutation.addedNodes[0].nodeType === 3) {
+                            controlDiv = mutation.target.childNodes[0].childNodes[1].childNodes[3];
                             timerButtonHTML = "<span class='icon add'></span>";
                             controlDiv.insertAdjacentHTML("beforeend", timerButtonHTML);
                             basecamp_tt.addTaskToTimeTracker();
