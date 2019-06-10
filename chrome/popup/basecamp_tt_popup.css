@@ -6,7 +6,7 @@ html, body {
 table { min-width: 250px; }
 th { text-align: left; }
 tbody { border-bottom: 1px solid black; }
-.task-name { 
+input { 
 	width: 100%;
 	height: 20px;
 }
@@ -23,6 +23,13 @@ tbody { border-bottom: 1px solid black; }
 .icon.play { background-image: url("../images/play_button.png"); }
 .icon.remove { background-image: url("../images/remove_button.png"); }
 .icon.add { background-image: url("../images/add_button.png"); }
+.icon.edit { background-image: url("../images/edit_button.png"); }
+.icon.save { background-image: url("../images/save_button.png"); }
+.icon.check { 
+	background-image: url("../images/check_icon.png");
+	cursor: inherit;
+}
+.icon.check:hover { filter: none; }
 .icon:hover {
 	filter: grayscale(75%);
 	transition: 0.5s;
@@ -56,4 +63,9 @@ tbody { border-bottom: 1px solid black; }
 .no-link {
 	cursor: inherit;
 	color: inherit;
+}
+.hide { display: none; }
+tfoot td {
+	border-top: 3px solid #72b740;
+	padding-top: 15px;
 }

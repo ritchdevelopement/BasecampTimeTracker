@@ -66,7 +66,7 @@
             version.textContent = "Version: " + browser.runtime.getManifest().version;
         },
         taskRemoveButton: function(task) {
-            var timerRemoveButton, i, taskStoragePromise, tasks, taskToRemove, taskEditToRemove, i;
+            var timerRemoveButton, i, taskStoragePromise, tasks, taskToRemove, taskEditToRemove;
             timerRemoveButton = document.querySelector("#task-timer-remove-" + task.id);
             timerRemoveButton.addEventListener("click", function() {
                 taskEditToRemove = document.querySelector("#task-timer-edit-row-" + task.id);
@@ -129,10 +129,9 @@
             }
         },
         taskTimerShowEdit: function(task) {
-            var taskEditPen, taskEdit, taskEditInput;
+            var taskEditPen, taskEdit;
             taskEditPen = document.querySelector("#task-timer-edit-" + task.id);
             taskEdit = document.querySelector("#task-timer-edit-row-" + task.id);
-            taskEditInput = taskEditInput = document.querySelector("#task-timer-edit-input-" + task.id);
             taskEditPen.addEventListener("click", function() {
                 taskEdit.classList.toggle("hide");
             });
