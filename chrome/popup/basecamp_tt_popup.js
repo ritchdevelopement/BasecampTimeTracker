@@ -63,10 +63,12 @@
             var timerRemoveButton, i, tasks, taskToRemove, taskEditToRemove;
             timerRemoveButton = document.querySelector("#task-timer-remove-" + task.id);
             timerRemoveButton.addEventListener("click", function() {
-                taskEditToRemove = document.querySelector("#task-timer-edit-row-" + task.id);
+                if(document.body.contains(document.querySelector("#task-timer-edit-row-" + task.id))) {
+                    taskEditToRemove = document.querySelector("#task-timer-edit-row-" + task.id);
+                    taskEditToRemove.remove();
+                }
                 taskToRemove = document.getElementById(task.id);
                 taskToRemove.remove();
-                taskEditToRemove.remove();
                 chrome.storage.local.get("taskStorage", function(res) {
                     tasks = res.taskStorage;
                     for(i in tasks) {

@@ -69,10 +69,12 @@
             var timerRemoveButton, i, taskStoragePromise, tasks, taskToRemove, taskEditToRemove;
             timerRemoveButton = document.querySelector("#task-timer-remove-" + task.id);
             timerRemoveButton.addEventListener("click", function() {
-                taskEditToRemove = document.querySelector("#task-timer-edit-row-" + task.id);
+                if(document.body.contains(document.querySelector("#task-timer-edit-row-" + task.id))) {
+                    taskEditToRemove = document.querySelector("#task-timer-edit-row-" + task.id);
+                    taskEditToRemove.remove();
+                }
                 taskToRemove = document.getElementById(task.id);
                 taskToRemove.remove();
-                taskEditToRemove.remove();
                 taskStoragePromise = basecamp_tt_popup.getTaskStorage();
                 taskStoragePromise.then(function(res) {
                     tasks = res.taskStorage;
