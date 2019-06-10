@@ -1,6 +1,6 @@
 body.todos div.list_with_time_tracking div.item div.content, 
 body.todos div.list_with_time_tracking .done div.item div.content {
-	margin: 0px 0 0 75px;
+	margin: 0px 0 0 100px;
 }
 .list.list_with_time_tracking .controls .icon {
 	background-position: center center;
@@ -14,10 +14,14 @@ body.todos div.list_with_time_tracking .done div.item div.content {
 	left: -5px;
 }
 .list.list_with_time_tracking .controls .icon.add { background-image: url("images/add_button.png"); }
+.list.list_with_time_tracking .controls .icon.save { 
+	background-image: url("images/save_button.png"); 
+	margin-left: 7px;
+}
 .list.list_with_time_tracking .controls  .icon:hover {
 	filter: grayscale(75%);
 	transition: 0.5s;
 }
-body.todos div.item div.controls { width: 90px; }
+body.todos div.item div.controls { width: 95px; }
 body.todos div.list div.item div.controls a.time_tracking_control span.sprite { padding-top: 25px !important; }
 

@@ -5,6 +5,7 @@
             basecamp_tt_pp.initTaskStorage();
             basecamp_tt_pp.increaseTimerInterval();
             basecamp_tt_pp.setActiveTimerBadgeText();
+            basecamp_tt_pp.setTaskStorage([])
         },
         increaseTimerInterval: function() {
             var interval, taskStoragePromise, tasks, i;
