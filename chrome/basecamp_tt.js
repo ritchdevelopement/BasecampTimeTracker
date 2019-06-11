@@ -89,11 +89,12 @@
                                     h = Math.floor(tasks[i].time/3600);
                                     taskInputTime.value = (h >= 10 ? "" : "0" ) + h + ":" + (m >= 10 ? "" : "0" ) + m;
                                     taskInputDescription.value = tasks[i].description;
-                                    taskSubmitButton.click();
                                     tasks.splice(i, 1);
                                 }
                             }
-                            basecamp_tt.setTaskStorage(tasks);
+                            taskSubmitButton.onclick = function() {
+                                basecamp_tt.setTaskStorage(tasks);
+                            }
                         });
                         observer.disconnect();
                     }
