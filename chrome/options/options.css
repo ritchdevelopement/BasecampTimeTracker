@@ -1,0 +1,25 @@
+.save-button {
+    text-align: center;
+}
+
+.options-container {
+    margin-top: 10px;
+}
+
+.options-container > div {
+	margin-bottom: 10px;
+}
+
+.options-container > div > input {
+    width: 100%;
+}
+
+.options-container > button {
+	background-color: #72b740;
+	color: #fff;
+	border: 0;
+    padding: 3px 15px;
+    margin-bottom: 10px;
+    width: 100%;
+    cursor: pointer;
+}

@@ -69,3 +69,8 @@ tfoot td {
 	border-top: 3px solid #72b740;
 	padding-top: 15px;
 }
+.options {
+	text-align: right;
+	cursor: pointer;
+	float: right;
+}

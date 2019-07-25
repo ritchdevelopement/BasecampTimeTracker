@@ -9,7 +9,145 @@
             basecamp_tt.addTimeToTask();
             basecamp_tt.addMarkForTrackedTasks();
             basecamp_tt.onRemoveTaskRemoveMark();
-            basecamp_tt.onMutationAddTimerButtonToTask();
+            basecamp_tt.observeMutations();
+            basecamp_tt.addAjaxLoaderToTasks();
+            basecamp_tt.getAllTimeEntriesForItems();
+            basecamp_tt.addAjaxLoaderToListTitle();
+            basecamp_tt.getAllTimeEntriesForList();
+            basecamp_tt.addMarketingBox();
+            basecamp_tt.saveMarketingInfo();
+            basecamp_tt.loadMarketingInfo();
+        },
+        addMarketingBox: function() {
+            var marketingInfoHTML, sidebar, str, actualMonth, monthsArray, date, monthsName, projectId;
+            str = window.location.href;
+            if(basecamp_tt.getNumberFromItemId(str)) {
+                projectId = basecamp_tt.getNumberFromItemId(str);
+                monthsArray    = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+                date = new Date();
+                actualMonth  = date.getMonth();
+                monthsName = monthsArray[actualMonth];
+                marketingInfoHTML = `<div id="marketing-info-box" class="marketing-info-box indent">
+                <h2>Onlinemarketing ${monthsName}</h2>
+                <div class="progress-values">
+                    <span id="marketing-progress-value">0</span>
+                    <span>/</span>
+                    <span id="marketing-progress-max" class="marketing-progress-max">0</span>
+                </div>
+                <progress id="progressBar" value="0" max="0"></progress>
+                <p>Monatliches Stundenkontingent</p>
+                <input id="marketing-max-hours" placeholder="3,5,1"/>
+                <p>Eingeschlossene Projekte</p>
+                <input id="marketing-included-projects" placeholder="42422414,12424214"/>
+                <p></p>
+                <button id="marketing-save-data">Speichern</button>
+                </div>`;
+                sidebar = document.querySelector("#sidebar");
+                sidebar.insertAdjacentHTML("afterend", marketingInfoHTML);
+            }
+        },
+        saveMarketingInfo: function() {
+            var maxHours, includedProjects, saveButton, str, headers, optionStorage, url, username, password;
+            str = window.location.href;
+            if(basecamp_tt.getNumberFromItemId(str)) {
+                saveButton = document.querySelector("#marketing-save-data");
+                saveButton.addEventListener("click", function() {
+                    if(confirm("Sind Sie sicher?")) {
+                        maxHours = document.querySelector("#marketing-max-hours").value || 0;
+                        includedProjects = document.querySelector("#marketing-included-projects").value || 0;
+                        headers = new Headers();
+                        basecamp_tt.getOptionsStorage().then(function(option) {
+                            optionStorage = option.optionStorage;
+                            if(!optionStorage.length) {
+                                if(optionStorage["url"] || optionStorage["user"] || optionStorage["pass"]) {
+                                    url = optionStorage["url"];
+                                    username = optionStorage["user"];
+                                    password = optionStorage["pass"];
+                                    headers.set('Authorization', 'Basic ' + btoa(username + ":" + password));
+                                    fetch(url + "basecamp-extension-api?projectIds=" + includedProjects + "&maxHours=" + maxHours, {
+                                        headers: headers
+                                    })
+                                    .then(function(response) {
+                                        if(!response.ok) {
+                                            throw Error(response.statusText);
+                                        }
+                                        saveButton.innerHTML = "Gespeichert!";
+                                        basecamp_tt.loadMarketingInfo();
+                                    })
+                                } else {
+                                    console.warn("Options aren't set or false");
+                                }
+                            } else {
+                                console.warn("Options aren't set")
+                            }
+                        });
+                    } else {
+
+                    }
+                });
+            }
+        },
+        loadMarketingInfo: function() {
+            var maxHours, includedProjects, dangerValue, i, progressBar, minutesToTwoDecimal, str, headers, progressValuesText, optionStorage, url, username, password, companyName, itemsJson, marketingProgressValue, marketingProgressMax;
+            str = window.location.href;
+            if(basecamp_tt.getNumberFromItemId(str)) {
+                companyName = document.querySelector("#Header h1 > span").textContent;
+                progressBar = document.querySelector("#progressBar");
+                maxHours = document.querySelector("#marketing-max-hours");
+                includedProjects = document.querySelector("#marketing-included-projects");
+                marketingProgressValue = document.querySelector("#marketing-progress-value");
+                marketingProgressMax = document.querySelector("#marketing-progress-max");
+                progressValuesText = document.querySelectorAll(".progress-values span");
+                headers = new Headers();
+                basecamp_tt.getOptionsStorage().then(function(option) {
+                    optionStorage = option.optionStorage;
+                    if(!optionStorage.length) {
+                        if(optionStorage["url"] || optionStorage["user"] || optionStorage["pass"]) {
+                            url = optionStorage["url"];
+                            username = optionStorage["user"];
+                            password = optionStorage["pass"];
+                            headers.set('Authorization', 'Basic ' + btoa(username + ":" + password));
+                            fetch(url + "basecamp-extension-api/?marketingHoursInfo=1", {
+                                headers: headers
+                            })
+                            .then(function(response) {
+                                if(!response.ok) {
+                                    throw Error(response.statusText);
+                                }
+                                return response.json();
+                            })
+                            .then(function(json) {
+                                itemsJson = json;  
+                                for(i in itemsJson) {
+                                    if(companyName === itemsJson[i].companyName) {
+                                        maxHours.value = itemsJson[i].maxHours;
+                                        includedProjects.value = itemsJson[i].includedProjects;
+                                        minutesToTwoDecimal = parseFloat(((itemsJson[i].minutes)/60).toFixed(2));
+                                        marketingProgressMax.textContent = itemsJson[i].maxHours;
+                                        marketingProgressValue.textContent = minutesToTwoDecimal;
+                                        progressBar.setAttribute("max", itemsJson[i].maxHours);
+                                        progressBar.setAttribute("value", minutesToTwoDecimal);
+                                        dangerValue = (100/itemsJson[i].maxHours) * minutesToTwoDecimal;
+                                        if(minutesToTwoDecimal >= itemsJson[i].maxHours) {
+                                            progressValuesText.forEach(function(span) {
+                                                span.style.color = "#f00";
+                                            });
+                                        } else if(dangerValue >= 80) {
+                                            progressValuesText.forEach(function(span) {
+                                                span.style.color = "#f29700";
+                                            });
+                                        }
+                                    }
+                                }
+                            })
+                        } else {
+                            console.warn("Options aren't set or false");
+                        }
+                    } else {
+                        console.warn("Options aren't set")
+                    }
+                });
+            }
         },
         addTimerButtonToTasks: function() {
             var controlDivs, timerButtonHTML;
@@ -27,13 +165,76 @@
                 controlDiv.insertAdjacentHTML("beforeend", timerButtonHTML);
             });
         },
+        addAjaxLoaderToTasks: function() {
+            var ajaxLoaderHtml, timeClocksOn, optionStorage, projectsExcluded, str, newstr, projectsExcludedArray;
+            str = window.location.href;
+            if(document.querySelectorAll(".sprite.timeclock.on") && document.querySelectorAll(".list_title").length <= 1) {
+                timeClocksOn = document.querySelectorAll(".sprite.timeclock.on");
+                ajaxLoaderHtml = "<div class='ajax-loader'><div></div><div></div><div></div><div></div></div>";
+                basecamp_tt.getOptionsStorage().then(function(option) {
+                    optionStorage = option.optionStorage;
+                    projectsExcluded = optionStorage.excl || "";
+                    projectsExcludedArray = projectsExcluded.split(",");
+                    newstr = basecamp_tt.getNumberFromItemId(str);
+                    if(!projectsExcludedArray.includes(newstr)) {
+                        timeClocksOn.forEach(function(timeClock) {
+                            timeClock.parentNode.parentNode.nextElementSibling.insertAdjacentHTML("beforeend", ajaxLoaderHtml);
+                        });
+                    }
+                });
+            }
+        },
+        addAjaxLoaderToListTitle: function() {
+            var ajaxLoaderHtml, listTitle, optionStorage, projectsExcluded, str, newstr, projectsExcludedArray, listTitleExtractedId, checkListHasTimeElement1, checkListHasTimeElement2;
+            str = window.location.href;
+            if(document.querySelectorAll(".list_title").length <= 1) {
+                ajaxLoaderHtml = "<div class='ajax-loader title-loader'><div></div><div></div><div></div><div></div></div>";
+                basecamp_tt.getOptionsStorage().then(function(option) {
+                    optionStorage = option.optionStorage;
+                    projectsExcluded = optionStorage.excl || "";
+                    projectsExcludedArray = projectsExcluded.split(",");
+                    newstr = basecamp_tt.getNumberFromItemId(str);
+                    if(!projectsExcludedArray.includes(newstr) && document.querySelector(".list_title")) {
+                        listTitle = document.querySelector(".list_title");
+                        listTitleExtractedId = basecamp_tt.getNumberFromItemId(listTitle.id);
+                        checkListHasTimeElement1 = document.querySelector("#list_" + listTitleExtractedId + "_title + .items_wrapper .sprite.timeclock.on");
+                        checkListHasTimeElement2 = document.querySelector("#list_" + listTitleExtractedId + "_title ~ .completed_items_todo_list.done .sprite.timeclock.on");
+                        if(checkListHasTimeElement1 || checkListHasTimeElement2) {
+                            listTitle.insertAdjacentHTML("beforeend", ajaxLoaderHtml);
+                        }
+                    }
+                });
+            }
+        },
+        addAjaxLoaderToTask: function(task) {
+            var ajaxLoaderHtml, taskId, taskContent, taskExtractedNum, optionStorage, projectsExcludedArray, newstr, projectsExcluded, str;
+            if(document.querySelectorAll(".list_title").length <= 1) {
+                basecamp_tt.getOptionsStorage().then(function(option) {
+                    str = window.location.href;
+                    optionStorage = option.optionStorage;
+                    projectsExcluded = optionStorage.excl || "";
+                    projectsExcludedArray = projectsExcluded.split(",");
+                    newstr = basecamp_tt.getNumberFromItemId(str);
+                    if(!projectsExcludedArray.includes(newstr)) {
+                        ajaxLoaderHtml = "<div class='ajax-loader'><div></div><div></div><div></div><div></div></div>";
+                        taskId = task.id;
+                        taskExtractedNum = basecamp_tt.getNumberFromItemId(taskId);
+                        if(task.querySelector(".sprite.timeclock.on")) {
+                            taskContent = document.querySelector("#item_" + taskExtractedNum + "_content");
+                            taskContent.insertAdjacentHTML("beforeend", ajaxLoaderHtml);
+                        }
+                    }
+                });
+                
+            }
+        },
         addTaskToTimeTracker: function() {
             var addButtons, taskId, taskExtractedNum, taskName, tasks, taskStoragePromise, i, taskUrl, taskItem;
             addButtons = document.querySelectorAll(".icon.add");
             addButtons.forEach(function(addButton) {
                 addButton.onclick = function() {
                     taskId = addButton.parentNode.nextElementSibling.id;
-                    taskExtractedNum = taskId.match(/\d+/g).map(Number)[0];
+                    taskExtractedNum = basecamp_tt.getNumberFromItemId(taskId);
                     taskName = document.querySelector("#item_wrap_" + taskExtractedNum).textContent;
                     taskItem = document.querySelector("body.todos #item_" + taskExtractedNum);
                     taskItem.style.backgroundImage = "linear-gradient(to right, #72b740, white 1.5%)";
@@ -59,62 +260,64 @@
             var boolTaskTracked, m, h, saveButtons, taskId, taskExtractedNum, taskInputTime, taskInputDescription, taskSubmitButton, taskTimeTrackingControl, target, observer, config, boolSaveButtonClicked, tasks, taskStoragePromise, i;
             boolSaveButtonClicked = false;
             boolTaskTracked = false;
-            saveButtons = document.querySelectorAll(".icon.save");
-            target = document.querySelector("body.todos .layout .innercol");
-            config = { childList: true, subtree: true };
-            observer = new MutationObserver(function(mutations) {
-                mutations.forEach(function(mutation) {
-                    if(mutation.target.classList.contains("content") && boolSaveButtonClicked) {
-                        taskInputTime = mutation.target.childNodes[0].childNodes[3].childNodes[1][5] || mutation.target.childNodes[0].childNodes[5].childNodes[1][5];
-                        taskInputDescription = mutation.target.childNodes[0].childNodes[3].childNodes[1][6] || mutation.target.childNodes[0].childNodes[5].childNodes[1][6];
-                        taskSubmitButton = mutation.target.childNodes[0].childNodes[3].childNodes[1][7] || mutation.target.childNodes[0].childNodes[5].childNodes[1][7];
+            if(document.querySelector("body.todos .layout .innercol")) {
+                saveButtons = document.querySelectorAll(".icon.save");
+                target = document.querySelector("body.todos .layout .innercol");
+                config = { childList: true, subtree: true };
+                observer = new MutationObserver(function(mutations) {
+                    mutations.forEach(function(mutation) {
+                        if(mutation.target.classList.contains("content") && boolSaveButtonClicked) {
+                            taskInputTime = mutation.target.childNodes[0].childNodes[3].childNodes[1][5] || mutation.target.childNodes[0].childNodes[5].childNodes[1][5];
+                            taskInputDescription = mutation.target.childNodes[0].childNodes[3].childNodes[1][6] || mutation.target.childNodes[0].childNodes[5].childNodes[1][6];
+                            taskSubmitButton = mutation.target.childNodes[0].childNodes[3].childNodes[1][7] || mutation.target.childNodes[0].childNodes[5].childNodes[1][7];
+                            taskStoragePromise = basecamp_tt.getTaskStorage();
+                            taskStoragePromise.then(function(res) {
+                                tasks = res.taskStorage;
+                                for(i in tasks) {
+                                    if(tasks[i].id === taskExtractedNum) {
+                                        m = Math.floor(tasks[i].time/60) % 60;
+                                        h = Math.floor(tasks[i].time/3600);
+                                        taskInputTime.value = (h >= 10 ? "" : "0" ) + h + ":" + (m >= 10 ? "" : "0" ) + m;
+                                        taskInputDescription.value = tasks[i].description;
+                                        tasks.splice(i, 1);
+                                    }
+                                }
+                                taskSubmitButton.onclick = function() {
+                                    basecamp_tt.setTaskStorage(tasks);
+                                }
+                            }).catch(function(err) {
+                                console.log(err);
+                            });
+                            observer.disconnect();
+                        }
+                    });
+                });
+                observer.observe(target, config);
+                saveButtons.forEach(function(saveButton) {
+                    saveButton.onclick = function() {
+                        taskId = saveButton.parentNode.nextElementSibling.id;
+                        taskExtractedNum = basecamp_tt.getNumberFromItemId(taskId)
+                        taskTimeTrackingControl = document.querySelector("body.todos #item_" + taskExtractedNum + "_time_tracking_control");
+                        boolSaveButtonClicked = true;
                         taskStoragePromise = basecamp_tt.getTaskStorage();
                         taskStoragePromise.then(function(res) {
                             tasks = res.taskStorage;
                             for(i in tasks) {
                                 if(tasks[i].id === taskExtractedNum) {
-                                    m = Math.floor(tasks[i].time/60) % 60;
-                                    h = Math.floor(tasks[i].time/3600);
-                                    taskInputTime.value = (h >= 10 ? "" : "0" ) + h + ":" + (m >= 10 ? "" : "0" ) + m;
-                                    taskInputDescription.value = tasks[i].description;
-                                    tasks.splice(i, 1);
+                                    boolTaskTracked = true;
                                 }
                             }
-                            taskSubmitButton.onclick = function() {
-                                basecamp_tt.setTaskStorage(tasks);
+                            if(boolTaskTracked) {
+                                taskTimeTrackingControl.click();
+                            } else {
+                                alert("No time tracked for this task!");
                             }
                         }).catch(function(err) {
                             console.log(err);
-                        });
-                        observer.disconnect();
-                    }
+                        });                  
+                    };
                 });
-            });
-            observer.observe(target, config);
-            saveButtons.forEach(function(saveButton) {
-                saveButton.onclick = function() {
-                    taskId = saveButton.parentNode.nextElementSibling.id;
-                    taskExtractedNum = taskId.match(/\d+/g).map(Number)[0];
-                    taskTimeTrackingControl = document.querySelector("body.todos #item_" + taskExtractedNum + "_time_tracking_control");
-                    boolSaveButtonClicked = true;
-                    taskStoragePromise = basecamp_tt.getTaskStorage();
-                    taskStoragePromise.then(function(res) {
-                        tasks = res.taskStorage;
-                        for(i in tasks) {
-                            if(tasks[i].id === taskExtractedNum) {
-                                boolTaskTracked = true;
-                            }
-                        }
-                        if(boolTaskTracked) {
-                            taskTimeTrackingControl.click();
-                        } else {
-                            alert("No time tracked for this task!");
-                        }
-                    }).catch(function(err) {
-                        console.log(err);
-                    });                  
-                };
-            });
+            }
         },
         addMarkForTrackedTasks: function() {
             var tasks, taskStoragePromise, i, taskElement;
@@ -130,6 +333,33 @@
             }).catch(function(err) {
                 console.log(err);
             });
+        },
+        addTimeInfoToTask: function(item) {
+            var itemContentId, timeInfoBoxHTML, itemId, itemTime, h, m, timeInfo;
+            itemId = item.itemId;
+            if(document.querySelector("#item_" + itemId + "_content")) {
+                m = item.minutes % 60;
+                h = Math.floor(item.minutes/60);
+                itemContentId = document.querySelector("#item_" + itemId + "_content");
+                itemTime = (h >= 10 ? "" : "0" ) + h + ":" + (m >= 10 ? "" : "0" ) + m
+                timeInfoBoxHTML = `<span id="item-time-info-${itemId}" class="item-time-info">${itemTime}</span>`;
+                itemContentId.insertAdjacentHTML("beforeend", timeInfoBoxHTML);
+                timeInfo = document.querySelector("#item_" + itemId + "_content .ajax-loader");
+                timeInfo.remove();
+            }
+        },
+        addTimeInfoToList: function(item) {
+            var itemContentId, timeInfoBoxHTML, listTime, h, m, timeInfoAjaxLoader;
+            if(document.querySelector(".list_title")) {    
+                m = item.minutes % 60;
+                h = Math.floor(item.minutes/60);
+                itemContentId = document.querySelector(".list_title");
+                listTime = (h >= 10 ? "" : "0" ) + h + ":" + (m >= 10 ? "" : "0" ) + m
+                timeInfoBoxHTML = `<span id="list-time-info" class="item-time-info title-info">${listTime}</span>`;
+                itemContentId.insertAdjacentHTML("beforeend", timeInfoBoxHTML);
+                timeInfoAjaxLoader = document.querySelector(".list_title .ajax-loader.title-loader");
+                timeInfoAjaxLoader.remove();
+            }
         },
         onRemoveTaskRemoveMark: function() {
             var taskElement, oldTaskStorage, newTaskStorage;
@@ -152,8 +382,8 @@
                 }
             });
         },
-        onMutationAddTimerButtonToTask: function() {
-            var target, observer, config, controlDiv, timerButtonHTML, saveButtonHTML;
+        observeMutations: function() {
+            var target, observer, config, controlDiv, timerButtonHTML, saveButtonHTML, timeInfo;
             config = { childList: true, subtree: true };
             if(document.body.contains(document.querySelector("body.todos .layout .innercol"))) {
                 target = document.querySelector("body.todos .layout .innercol");
@@ -168,6 +398,12 @@
                             basecamp_tt.addTaskToTimeTracker();
                             basecamp_tt.addTimeToTask();
                             basecamp_tt.addMarkForTrackedTasks();
+                            basecamp_tt.addAjaxLoaderToTask(mutation.addedNodes[0]);
+                            basecamp_tt.getAllTimeEntriesForTask(mutation.addedNodes[0]);
+                            basecamp_tt.addAjaxLoaderToListTitle();
+                            timeInfo = document.querySelector(".list_title .item-time-info.title-info");
+                            timeInfo.remove();
+                            basecamp_tt.getAllTimeEntriesForList();
                         } else if(mutation.target.classList.contains("completed_items_todo_list") && mutation.addedNodes[0].nodeType === 3) {
                             controlDiv = mutation.target.childNodes[0].childNodes[1].childNodes[3];
                             timerButtonHTML = "<span class='icon add'></span>";
@@ -177,6 +413,8 @@
                             basecamp_tt.addTaskToTimeTracker();
                             basecamp_tt.addTimeToTask();
                             basecamp_tt.addMarkForTrackedTasks();
+                            basecamp_tt.addAjaxLoaderToTask(mutation.target.firstChild);
+                            basecamp_tt.getAllTimeEntriesForTask(mutation.target.firstChild);
                         } else if(mutation.target.classList.contains("items") && mutation.addedNodes.length !== 0) {
                             controlDiv = mutation.addedNodes[1].childNodes[1].childNodes[3];
                             timerButtonHTML = "<span class='icon add'></span>";
@@ -186,7 +424,13 @@
                             basecamp_tt.addTaskToTimeTracker();
                             basecamp_tt.addTimeToTask();
                             basecamp_tt.addMarkForTrackedTasks();
-                        } else if(mutation.target.classList.contains("items") && mutation.addedNodes.length === 0 && mutation.nextSibling) {
+                            basecamp_tt.addAjaxLoaderToTask(mutation.addedNodes[1]);
+                            basecamp_tt.getAllTimeEntriesForTask(mutation.addedNodes[1]);
+                            basecamp_tt.addAjaxLoaderToListTitle();
+                            timeInfo = document.querySelector(".list_title .item-time-info.title-info");
+                            timeInfo.remove();
+                            basecamp_tt.getAllTimeEntriesForList();
+                        } else if(mutation.target.classList.contains("items") && mutation.addedNodes.length === 0 && mutation.nextSibling && mutation.nextSibling.childNodes[1]) {
                             controlDiv = mutation.nextSibling.childNodes[1].childNodes[3];
                             if(!controlDiv.childNodes[5]) {
                                 timerButtonHTML = "<span class='icon add'></span>";
@@ -196,11 +440,171 @@
                                 basecamp_tt.addTaskToTimeTracker();
                                 basecamp_tt.addTimeToTask();
                                 basecamp_tt.addMarkForTrackedTasks();
+                                basecamp_tt.addAjaxLoaderToTask(mutation.nextSibling);
+                                basecamp_tt.getAllTimeEntriesForTask(mutation.nextSibling);
                             }
                         }
                     });    
                 });
                 observer.observe(target, config);
+            }
+        },
+        getAllTimeEntriesForList: function() {
+            var listTitleId, listTitleExtractedId, checkListHasTimeElement1, checkListHasTimeElement2, itemIdArray, itemExtractedId, itemExtracedIdArray, itemIdsString, str, headers, optionStorage, projectsExcluded, projectsExcludedArray, newstr, url, username, password, itemsJson;
+            str = window.location.href;
+            if(basecamp_tt.getNumberFromItemId(str) && document.querySelectorAll(".list_title").length <= 1) {
+                newstr = basecamp_tt.getNumberFromItemId(str);
+                headers = new Headers();
+                basecamp_tt.getOptionsStorage().then(function(option) {
+                    optionStorage = option.optionStorage;
+                    projectsExcluded = optionStorage.excl;
+                    projectsExcludedArray = projectsExcluded.split(",");
+                    if(!projectsExcludedArray.includes(newstr)) {
+                        if(!optionStorage.length) {
+                            if(optionStorage["url"] || optionStorage["user"] || optionStorage["pass"]) {
+                                url = optionStorage["url"];
+                                username = optionStorage["user"];
+                                password = optionStorage["pass"];
+                                headers.set('Authorization', 'Basic ' + btoa(username + ":" + password));
+                                itemExtracedIdArray = [];
+                                itemIdArray = document.querySelectorAll("body.todos div.list div.list_widget");
+                                listTitleId = document.querySelector(".list_title");
+                                itemIdArray.forEach(function(itemId) {
+                                    if(itemId.querySelector(".sprite.timeclock.on")) {
+                                        itemExtractedId = basecamp_tt.getNumberFromItemId(itemId.id);
+                                        listTitleExtractedId = basecamp_tt.getNumberFromItemId(listTitleId.id);
+                                        checkListHasTimeElement1 = document.querySelector("#list_" + listTitleExtractedId + "_title + .items_wrapper .sprite.timeclock.on");
+                                        checkListHasTimeElement2 = document.querySelector("#list_" + listTitleExtractedId + "_title ~ .completed_items_todo_list.done .sprite.timeclock.on");
+                                        if(checkListHasTimeElement1 || checkListHasTimeElement2) {
+                                            itemExtracedIdArray.push(itemExtractedId);
+                                        }
+                                    }     
+                                });
+                                itemIdsString = itemExtracedIdArray.join(",");
+                                fetch(url + "basecamp-extension-api?listTimeItemIds=" + itemIdsString, {
+                                    headers: headers
+                                })
+                                .then(function(response) {
+                                    if(!response.ok) {
+                                        throw Error(response.statusText);
+                                    }
+                                    return response.json();
+                                })
+                                .then(function(json) {
+                                    itemsJson = json;  
+                                    basecamp_tt.addTimeInfoToList(itemsJson[0]);
+                                })
+                            } else {
+                                console.warn("Options aren't set or false");
+                            }
+                        } else {
+                            console.warn("Options aren't set")
+                        }
+                    } else {
+                        console.warn("Project is excluded")
+                    }
+                });
+            }
+        },
+        getAllTimeEntriesForTask: function(task) {
+            var taskId, taskExtractedNum, str, headers, optionStorage, projectsExcluded, projectsExcludedArray, newstr, url, username, password, itemsJson;
+            str = window.location.href;
+            if(basecamp_tt.getNumberFromItemId(str) && document.querySelectorAll(".list_title").length <= 1) {
+                taskId = task.id;
+                taskExtractedNum = basecamp_tt.getNumberFromItemId(taskId)
+                newstr = basecamp_tt.getNumberFromItemId(str);
+                headers = new Headers();
+                basecamp_tt.getOptionsStorage().then(function(option) {
+                    optionStorage = option.optionStorage;
+                    projectsExcluded = optionStorage.excl;
+                    projectsExcludedArray = projectsExcluded.split(",");
+                    if(!projectsExcludedArray.includes(newstr)) {
+                        if(!optionStorage.length) {
+                            if(optionStorage["url"] || optionStorage["user"] || optionStorage["pass"]) {
+                                url = optionStorage["url"];
+                                username = optionStorage["user"];
+                                password = optionStorage["pass"];
+                                headers.set('Authorization', 'Basic ' + btoa(username + ":" + password));
+                                fetch(url + "basecamp-extension-api?itemId=" + taskExtractedNum, {
+                                    headers: headers
+                                })
+                                .then(function(response) {
+                                    if(!response.ok) {
+                                        throw Error(response.statusText);
+                                    }
+                                    return response.json();
+                                })
+                                .then(function(json) {
+                                    itemsJson = json;
+                                    itemsJson.forEach(function(item) {
+                                        basecamp_tt.addTimeInfoToTask(item);
+                                    });
+                                })
+                            } else {
+                                console.warn("Options aren't set or false");
+                            }
+                        } else {
+                            console.warn("Options aren't set")
+                        }
+                    } else {
+                        console.warn("Project is excluded")
+                    }
+                });
+            }
+        },
+        getAllTimeEntriesForItems: function() {
+            var str, newstr, username, password, headers, url, optionStorage, itemsJson, projectsExcludedArray, projectsExcluded;
+            str = window.location.href;
+            if(basecamp_tt.getNumberFromItemId(str) && document.querySelectorAll(".list_title").length <= 1) {
+                newstr = basecamp_tt.getNumberFromItemId(str)
+                headers = new Headers();
+                basecamp_tt.getOptionsStorage().then(function(option) {
+                    optionStorage = option.optionStorage;
+                    projectsExcluded = optionStorage.excl || "";
+                    projectsExcludedArray = projectsExcluded.split(",");
+                    if(!projectsExcludedArray.includes(newstr)) {
+                        if(!optionStorage.length) {
+                            if(optionStorage["url"] || optionStorage["user"] || optionStorage["pass"]) {
+                                url = optionStorage["url"];
+                                username = optionStorage["user"];
+                                password = optionStorage["pass"];
+                                headers.set('Authorization', 'Basic ' + btoa(username + ":" + password));
+                                fetch(url + "basecamp-extension-api?itemIds=" + newstr, {
+                                    headers: headers
+                                })
+                                .then(function(response) {
+                                    if(!response.ok) {
+                                        throw Error(response.statusText);
+                                    }
+                                    return response.json();
+                                })
+                                .then(function(json) {
+                                    itemsJson = json;
+                                    itemsJson.forEach(function(item) {
+                                        basecamp_tt.addTimeInfoToTask(item);
+                                    });
+                                    
+                                })
+                            } else {
+                                console.warn("Options are false");
+                            }
+                        } else {
+                            console.warn("Options aren't set")
+                        }
+                    } else {
+                        console.warn("Project is excluded")
+                    }
+                });
+            }
+        },
+        getNumberFromItemId: function(itemId) {
+            if(itemId.match(/\d+/g)) {
+                var itemExtractedNum = itemId.match(/\d+/g).map(String)[0];
+                if(itemExtractedNum) {
+                    return itemExtractedNum;
+                } else {
+                    return false;
+                }
             }
         },
         createTaskObject: function(taskId, taskName, taskUrl) {
@@ -214,6 +618,9 @@
                 description: ""
             }
             return task;
+        },
+        getOptionsStorage: function() {
+            return browser.storage.local.get("optionStorage");
         },
         getTaskStorage: function() {
             return browser.storage.local.get("taskStorage");

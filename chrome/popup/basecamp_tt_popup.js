@@ -5,6 +5,7 @@
             basecamp_tt_popup.showTasksInPopup();
             basecamp_tt_popup.taskAddButton();
             basecamp_tt_popup.showVersion();
+            basecamp_tt_popup.openOptionPage();
         },
         showTasksInPopup: function() {
             var tasks;
@@ -221,6 +222,12 @@
                 }
             });
             return randomId;
+        },
+        openOptionPage: function() {
+            var optionsButton = document.querySelector("#options");
+            optionsButton.addEventListener("click", function() {
+                chrome.runtime.openOptionsPage();
+            });
         },
         createTaskObject: function(taskId, taskName) {
             var task;

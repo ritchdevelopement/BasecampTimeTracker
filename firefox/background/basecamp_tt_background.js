@@ -3,9 +3,9 @@
     var basecamp_tt_pp = {
         init: function() {
             basecamp_tt_pp.initTaskStorage();
+            basecamp_tt_pp.initOptionStorage();
             basecamp_tt_pp.increaseTimerInterval();
             basecamp_tt_pp.setActiveTimerBadgeText();
-            basecamp_tt_pp.setTaskStorage([])
         },
         increaseTimerInterval: function() {
             var interval, taskStoragePromise, tasks, i;
@@ -31,12 +31,14 @@
             browser.browserAction.setBadgeBackgroundColor({color: "#FF0000"});
             browser.browserAction.setBadgeTextColor({color: "#FFF"});
             browser.storage.onChanged.addListener(function(changes, area) {
-                activeTimer = 0;
-                taskStorage = changes.taskStorage.newValue;
-                for(i in taskStorage) {
-                    activeTimer += 1;
+                if(changes.taskStorage) {
+                    activeTimer = 0;
+                    taskStorage = changes.taskStorage.newValue;
+                    for(i in taskStorage) {
+                        activeTimer += 1;
+                    }
+                    browser.browserAction.setBadgeText({text: activeTimer.toString()});
                 }
-                browser.browserAction.setBadgeText({text: activeTimer.toString()});
             });
         },
         initTaskStorage: function() {
@@ -48,10 +50,27 @@
                 console.log(err);
             });
         },
+        initOptionStorage: function() {
+            var optionStoragePromise;
+            optionStoragePromise = basecamp_tt_pp.getOptionsStorage();
+            optionStoragePromise.then(function(res) {
+                if(!res.optionStorage) basecamp_tt_pp.setOptionsStorage([]);
+            }).catch(function(err) {
+                console.log(err);
+            });
+        },
+        setOptionsStorage: function(optionsArray) {
+            browser.storage.local.set({
+                optionStorage: optionsArray
+            });
+        },
         setTaskStorage: function(taskArray) {
             browser.storage.local.set({
                 taskStorage: taskArray
             });
+        },
+        getOptionsStorage: function() {
+            return browser.storage.local.get("optionStorage");
         },
         getTaskStorage: function() {
             return browser.storage.local.get("taskStorage");
