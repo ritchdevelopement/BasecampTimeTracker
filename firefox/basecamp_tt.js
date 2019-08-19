@@ -11,9 +11,9 @@
             basecamp_tt.onRemoveTaskRemoveMark();
             basecamp_tt.observeMutations();
             basecamp_tt.addAjaxLoaderToTasks();
-            basecamp_tt.getAllTimeEntriesForItems();
+            basecamp_tt.getEntries("itemIds", 2);
             basecamp_tt.addAjaxLoaderToListTitle();
-            basecamp_tt.getAllTimeEntriesForList();
+            basecamp_tt.getEntries("listTimeItemIds", 1);
             basecamp_tt.addMarketingBox();
             basecamp_tt.saveMarketingInfo();
             basecamp_tt.loadMarketingInfo();
@@ -234,7 +234,7 @@
             addButtons.forEach(function(addButton) {
                 addButton.onclick = function() {
                     taskId = addButton.parentNode.nextElementSibling.id;
-                    taskExtractedNum = basecamp_tt.getNumberFromItemId(taskId);
+                    taskExtractedNum = Number(basecamp_tt.getNumberFromItemId(taskId));
                     taskName = document.querySelector("#item_wrap_" + taskExtractedNum).textContent;
                     taskItem = document.querySelector("body.todos #item_" + taskExtractedNum);
                     taskItem.style.backgroundImage = "linear-gradient(to right, #72b740, white 1.5%)";
@@ -399,11 +399,11 @@
                             basecamp_tt.addTimeToTask();
                             basecamp_tt.addMarkForTrackedTasks();
                             basecamp_tt.addAjaxLoaderToTask(mutation.addedNodes[0]);
-                            basecamp_tt.getAllTimeEntriesForTask(mutation.addedNodes[0]);
+                            basecamp_tt.getEntries("itemId", 3, mutation.addedNodes[0]);
                             basecamp_tt.addAjaxLoaderToListTitle();
                             timeInfo = document.querySelector(".list_title .item-time-info.title-info");
                             timeInfo.remove();
-                            basecamp_tt.getAllTimeEntriesForList();
+                            basecamp_tt.getEntries("listTimeItemIds", 1);
                         } else if(mutation.target.classList.contains("completed_items_todo_list") && mutation.addedNodes[0].nodeType === 3) {
                             controlDiv = mutation.target.childNodes[0].childNodes[1].childNodes[3];
                             timerButtonHTML = "<span class='icon add'></span>";
@@ -414,7 +414,7 @@
                             basecamp_tt.addTimeToTask();
                             basecamp_tt.addMarkForTrackedTasks();
                             basecamp_tt.addAjaxLoaderToTask(mutation.target.firstChild);
-                            basecamp_tt.getAllTimeEntriesForTask(mutation.target.firstChild);
+                            basecamp_tt.getEntries("itemId", 3, mutation.target.firstChild);
                         } else if(mutation.target.classList.contains("items") && mutation.addedNodes.length !== 0) {
                             controlDiv = mutation.addedNodes[1].childNodes[1].childNodes[3];
                             timerButtonHTML = "<span class='icon add'></span>";
@@ -425,11 +425,11 @@
                             basecamp_tt.addTimeToTask();
                             basecamp_tt.addMarkForTrackedTasks();
                             basecamp_tt.addAjaxLoaderToTask(mutation.addedNodes[1]);
-                            basecamp_tt.getAllTimeEntriesForTask(mutation.addedNodes[1]);
+                            basecamp_tt.getEntries("itemId", 3, mutation.addedNodes[1]);
                             basecamp_tt.addAjaxLoaderToListTitle();
                             timeInfo = document.querySelector(".list_title .item-time-info.title-info");
                             timeInfo.remove();
-                            basecamp_tt.getAllTimeEntriesForList();
+                            basecamp_tt.getEntries("listTimeItemIds", 1);
                         } else if(mutation.target.classList.contains("items") && mutation.addedNodes.length === 0 && mutation.nextSibling && mutation.nextSibling.childNodes[1]) {
                             controlDiv = mutation.nextSibling.childNodes[1].childNodes[3];
                             if(!controlDiv.childNodes[5]) {
@@ -441,7 +441,7 @@
                                 basecamp_tt.addTimeToTask();
                                 basecamp_tt.addMarkForTrackedTasks();
                                 basecamp_tt.addAjaxLoaderToTask(mutation.nextSibling);
-                                basecamp_tt.getAllTimeEntriesForTask(mutation.nextSibling);
+                                basecamp_tt.getEntries("itemId", 3, mutation.nextSibling);
                             }
                         }
                     });    
@@ -449,8 +449,8 @@
                 observer.observe(target, config);
             }
         },
-        getAllTimeEntriesForList: function() {
-            var listTitleId, listTitleExtractedId, checkListHasTimeElement1, checkListHasTimeElement2, itemIdArray, itemExtractedId, itemExtracedIdArray, itemIdsString, str, headers, optionStorage, projectsExcluded, projectsExcludedArray, newstr, url, username, password, itemsJson;
+        getEntries: function(nameFor, type, task = null) {
+            var str, headers, optionStorage, projectsExcluded, projectsExcludedArray, newstr, url, username, password, itemsJson;
             str = window.location.href;
             if(basecamp_tt.getNumberFromItemId(str) && document.querySelectorAll(".list_title").length <= 1) {
                 newstr = basecamp_tt.getNumberFromItemId(str);
@@ -466,22 +466,7 @@
                                 username = optionStorage["user"];
                                 password = optionStorage["pass"];
                                 headers.set('Authorization', 'Basic ' + btoa(username + ":" + password));
-                                itemExtracedIdArray = [];
-                                itemIdArray = document.querySelectorAll("body.todos div.list div.list_widget");
-                                listTitleId = document.querySelector(".list_title");
-                                itemIdArray.forEach(function(itemId) {
-                                    if(itemId.querySelector(".sprite.timeclock.on")) {
-                                        itemExtractedId = basecamp_tt.getNumberFromItemId(itemId.id);
-                                        listTitleExtractedId = basecamp_tt.getNumberFromItemId(listTitleId.id);
-                                        checkListHasTimeElement1 = document.querySelector("#list_" + listTitleExtractedId + "_title + .items_wrapper .sprite.timeclock.on");
-                                        checkListHasTimeElement2 = document.querySelector("#list_" + listTitleExtractedId + "_title ~ .completed_items_todo_list.done .sprite.timeclock.on");
-                                        if(checkListHasTimeElement1 || checkListHasTimeElement2) {
-                                            itemExtracedIdArray.push(itemExtractedId);
-                                        }
-                                    }     
-                                });
-                                itemIdsString = itemExtracedIdArray.join(",");
-                                fetch(url + "basecamp-extension-api?listTimeItemIds=" + itemIdsString, {
+                                fetch(url + "basecamp-extension-api?" + nameFor + "=" + ((type === 1) ? basecamp_tt.getExtractedIdItemIdArray() : (type === 2) ? newstr : (type === 3) ? basecamp_tt.getNumberFromItemId(task.id) : ""), {
                                     headers: headers
                                 })
                                 .then(function(response) {
@@ -491,8 +476,12 @@
                                     return response.json();
                                 })
                                 .then(function(json) {
-                                    itemsJson = json;  
-                                    basecamp_tt.addTimeInfoToList(itemsJson[0]);
+                                    itemsJson = json;
+                                    switch(type) {
+                                        case 1: basecamp_tt.addTimeInfoToList(itemsJson[0]); break;
+                                        case 2: itemsJson.forEach(function(item) { basecamp_tt.addTimeInfoToTask(item); }); break;
+                                        case 3: itemsJson.forEach(function(item) { basecamp_tt.addTimeInfoToTask(item); }); break;
+                                    }  
                                 })
                             } else {
                                 console.warn("Options aren't set or false");
@@ -506,96 +495,24 @@
                 });
             }
         },
-        getAllTimeEntriesForTask: function(task) {
-            var taskId, taskExtractedNum, str, headers, optionStorage, projectsExcluded, projectsExcludedArray, newstr, url, username, password, itemsJson;
-            str = window.location.href;
-            if(basecamp_tt.getNumberFromItemId(str) && document.querySelectorAll(".list_title").length <= 1) {
-                taskId = task.id;
-                taskExtractedNum = basecamp_tt.getNumberFromItemId(taskId)
-                newstr = basecamp_tt.getNumberFromItemId(str);
-                headers = new Headers();
-                basecamp_tt.getOptionsStorage().then(function(option) {
-                    optionStorage = option.optionStorage;
-                    projectsExcluded = optionStorage.excl;
-                    projectsExcludedArray = projectsExcluded.split(",");
-                    if(!projectsExcludedArray.includes(newstr)) {
-                        if(!optionStorage.length) {
-                            if(optionStorage["url"] || optionStorage["user"] || optionStorage["pass"]) {
-                                url = optionStorage["url"];
-                                username = optionStorage["user"];
-                                password = optionStorage["pass"];
-                                headers.set('Authorization', 'Basic ' + btoa(username + ":" + password));
-                                fetch(url + "basecamp-extension-api?itemId=" + taskExtractedNum, {
-                                    headers: headers
-                                })
-                                .then(function(response) {
-                                    if(!response.ok) {
-                                        throw Error(response.statusText);
-                                    }
-                                    return response.json();
-                                })
-                                .then(function(json) {
-                                    itemsJson = json;
-                                    itemsJson.forEach(function(item) {
-                                        basecamp_tt.addTimeInfoToTask(item);
-                                    });
-                                })
-                            } else {
-                                console.warn("Options aren't set or false");
-                            }
-                        } else {
-                            console.warn("Options aren't set")
-                        }
-                    } else {
-                        console.warn("Project is excluded")
+        getExtractedIdItemIdArray: function() {
+            var itemExtracedIdArray, itemIdArray, listTitleId, itemExtractedId, listTitleExtractedId, checkListHasTimeElement1, checkListHasTimeElement2, itemIdsString;
+            itemExtracedIdArray = [];
+            itemIdArray = document.querySelectorAll("body.todos div.list div.list_widget");
+            listTitleId = document.querySelector(".list_title");
+            itemIdArray.forEach(function(itemId) {
+                if(itemId.querySelector(".sprite.timeclock.on")) {
+                    itemExtractedId = basecamp_tt.getNumberFromItemId(itemId.id);
+                    listTitleExtractedId = basecamp_tt.getNumberFromItemId(listTitleId.id);
+                    checkListHasTimeElement1 = document.querySelector("#list_" + listTitleExtractedId + "_title + .items_wrapper .sprite.timeclock.on");
+                    checkListHasTimeElement2 = document.querySelector("#list_" + listTitleExtractedId + "_title ~ .completed_items_todo_list.done .sprite.timeclock.on");
+                    if(checkListHasTimeElement1 || checkListHasTimeElement2) {
+                        itemExtracedIdArray.push(itemExtractedId);
                     }
-                });
-            }
-        },
-        getAllTimeEntriesForItems: function() {
-            var str, newstr, username, password, headers, url, optionStorage, itemsJson, projectsExcludedArray, projectsExcluded;
-            str = window.location.href;
-            if(basecamp_tt.getNumberFromItemId(str) && document.querySelectorAll(".list_title").length <= 1) {
-                newstr = basecamp_tt.getNumberFromItemId(str)
-                headers = new Headers();
-                basecamp_tt.getOptionsStorage().then(function(option) {
-                    optionStorage = option.optionStorage;
-                    projectsExcluded = optionStorage.excl || "";
-                    projectsExcludedArray = projectsExcluded.split(",");
-                    if(!projectsExcludedArray.includes(newstr)) {
-                        if(!optionStorage.length) {
-                            if(optionStorage["url"] || optionStorage["user"] || optionStorage["pass"]) {
-                                url = optionStorage["url"];
-                                username = optionStorage["user"];
-                                password = optionStorage["pass"];
-                                headers.set('Authorization', 'Basic ' + btoa(username + ":" + password));
-                                fetch(url + "basecamp-extension-api?itemIds=" + newstr, {
-                                    headers: headers
-                                })
-                                .then(function(response) {
-                                    if(!response.ok) {
-                                        throw Error(response.statusText);
-                                    }
-                                    return response.json();
-                                })
-                                .then(function(json) {
-                                    itemsJson = json;
-                                    itemsJson.forEach(function(item) {
-                                        basecamp_tt.addTimeInfoToTask(item);
-                                    });
-                                    
-                                })
-                            } else {
-                                console.warn("Options are false");
-                            }
-                        } else {
-                            console.warn("Options aren't set")
-                        }
-                    } else {
-                        console.warn("Project is excluded")
-                    }
-                });
-            }
+                }     
+            });
+            itemIdsString = itemExtracedIdArray.join(",");
+            return itemIdsString;
         },
         getNumberFromItemId: function(itemId) {
             if(itemId.match(/\d+/g)) {
