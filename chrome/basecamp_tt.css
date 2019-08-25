@@ -99,3 +99,25 @@ progress {
 .marketing-info-box input {
 	width: 139px;
 }
+.show-marketing-options-container {
+	margin-top: 10px;
+}
+.show-marketing-options {
+	cursor: pointer;
+	font-size: 12px;
+}
+.show-marketing-options:hover {
+	color: #000;
+	background-color: transparent;
+}
+.box-hide {
+	display: none;
+}
+.marketing-overview-show-label {
+	display: block;
+	margin: 10px 0;
+	font-size: 12px;
+}
+.marketing-info-box .marketing-overview-show-label > input {
+	width: auto;
+}

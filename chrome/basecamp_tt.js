@@ -17,6 +17,7 @@
             basecamp_tt.addAjaxLoaderToListTitle();
             basecamp_tt.getEntries("listTimeItemIds", 1);
             basecamp_tt.addMarketingBox();
+            basecamp_tt.showHideMarketingBox();
             basecamp_tt.saveMarketingInfo();
             basecamp_tt.loadMarketingInfo();
         },
@@ -37,19 +38,40 @@
                     <span id="marketing-progress-max" class="marketing-progress-max">0</span>
                 </div>
                 <progress id="progressBar" value="0" max="0"></progress>
-                <p>Monatliches Stundenkontingent</p>
+                <div class="show-marketing-options-container">
+                <a id="show-marketing-options" class="show-marketing-options">Zeige Optionen &#x25BC;</a>
+                </div>
+                <div id="marketing-options" class="box-hide">
+                <p>Monatliches Stundenkontingent (Pflicht)</p>
                 <input id="marketing-max-hours" placeholder="3,5,1"/>
-                <p>Eingeschlossene Projekte</p>
+                <p>Eingeschlossene Projekte (Pflicht)</p>
                 <input id="marketing-included-projects" placeholder="42422414,12424214"/>
-                <p></p>
+                <p>Übersichtsname (Pflicht)</p>
+                <input id="marketing-overview-name" placeholder="Name"/>
+                <label for="marketing-overview-show" class="marketing-overview-show-label"><input id="marketing-overview-show" type="checkbox"/>In Übersicht anzeigen</label>
                 <button id="marketing-save-data">Speichern</button>
+                </div>
                 </div>`;
                 sidebar = document.querySelector("#sidebar");
                 sidebar.insertAdjacentHTML("afterend", marketingInfoHTML);
             }
         },
+        showHideMarketingBox: function() {
+            var showMarketingOption, marketingOptions;
+            showMarketingOption = document.querySelector("#show-marketing-options");
+            showMarketingOption.addEventListener("click", function() {
+                marketingOptions = document.querySelector("#marketing-options");
+                if(marketingOptions.classList.contains("box-hide")) {
+                    marketingOptions.classList.remove("box-hide");
+                    showMarketingOption.innerHTML = "Verstecke Optionen &#x25B2;";
+                } else {
+                    marketingOptions.classList.add("box-hide");
+                    showMarketingOption.innerHTML = "Zeige Optionen &#x25BC;";
+                }
+            });
+        },
         saveMarketingInfo: function() {
-            var maxHours, includedProjects, saveButton, str, headers, optionStorage, url, username, password;
+            var maxHours, includedProjects, overviewName, showInOverview, saveButton, str, headers, optionStorage, url, username, password;
             str = window.location.href;
             if(basecamp_tt.getNumberFromItemId(str)) {
                 saveButton = document.querySelector("#marketing-save-data");
@@ -57,6 +79,8 @@
                     if(confirm("Sind Sie sicher?")) {
                         maxHours = document.querySelector("#marketing-max-hours").value || 0;
                         includedProjects = document.querySelector("#marketing-included-projects").value || 0;
+                        overviewName = document.querySelector("#marketing-overview-name").value || "";
+                        showInOverview = document.querySelector("#marketing-overview-show").checked;
                         headers = new Headers();
                         chrome.storage.local.get("optionStorage", function(option) {
                             optionStorage = option.optionStorage;
@@ -66,7 +90,7 @@
                                     username = optionStorage["user"];
                                     password = optionStorage["pass"];
                                     headers.set('Authorization', 'Basic ' + btoa(username + ":" + password));
-                                    fetch(url + "basecamp-extension-api?projectIds=" + includedProjects + "&maxHours=" + maxHours, {
+                                    fetch(url + "basecamp-extension-api?projectIds=" + includedProjects + "&maxHours=" + maxHours + "&overviewName=" + overviewName + "&showInOverview=" + showInOverview, {
                                         headers: headers
                                     })
                                     .then(function(response) {
@@ -90,7 +114,7 @@
             }
         },
         loadMarketingInfo: function() {
-            var maxHours, includedProjects, dangerValue, i, progressBar, minutesToTwoDecimal, str, headers, progressValuesText, optionStorage, url, username, password, companyName, itemsJson, marketingProgressValue, marketingProgressMax;
+            var maxHours, overviewName, showInOverview, includedProjects, includedProjectsArray, dangerValue, i, progressBar, minutesToTwoDecimal, str, headers, progressValuesText, optionStorage, url, username, password, companyName, itemsJson, marketingProgressValue, marketingProgressMax;
             str = window.location.href;
             if(basecamp_tt.getNumberFromItemId(str)) {
                 companyName = document.querySelector("#Header h1 > span").textContent;
@@ -100,6 +124,8 @@
                 marketingProgressValue = document.querySelector("#marketing-progress-value");
                 marketingProgressMax = document.querySelector("#marketing-progress-max");
                 progressValuesText = document.querySelectorAll(".progress-values span");
+                overviewName = document.querySelector("#marketing-overview-name");
+                showInOverview = document.querySelector("#marketing-overview-show");
                 headers = new Headers();
                 chrome.storage.local.get("optionStorage", function(option) {
                     optionStorage = option.optionStorage;
@@ -121,7 +147,8 @@
                             .then(function(json) {
                                 itemsJson = json;  
                                 for(i in itemsJson) {
-                                    if(companyName === itemsJson[i].companyName) {
+                                    includedProjectsArray = itemsJson[i].includedProjects.split(",");
+                                    if(includedProjectsArray.includes(basecamp_tt.getNumberFromItemId(str))) {
                                         maxHours.value = itemsJson[i].maxHours;
                                         includedProjects.value = itemsJson[i].includedProjects;
                                         minutesToTwoDecimal = parseFloat(((itemsJson[i].minutes)/60).toFixed(2));
@@ -130,6 +157,8 @@
                                         progressBar.setAttribute("max", itemsJson[i].maxHours);
                                         progressBar.setAttribute("value", minutesToTwoDecimal);
                                         dangerValue = (100/itemsJson[i].maxHours) * minutesToTwoDecimal;
+                                        overviewName.value = itemsJson[i].overviewName;
+                                        showInOverview.checked = (itemsJson[i].showInOverview === "true") ? true : (itemsJson[i].showInOverview === "false") ? false : false;
                                         if(minutesToTwoDecimal >= itemsJson[i].maxHours) {
                                             progressValuesText.forEach(function(span) {
                                                 span.style.color = "#f00";

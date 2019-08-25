@@ -100,3 +100,22 @@ body.todos div.list div.item div.controls a.time_tracking_control span.sprite { 
 progress {
 	width: 149px;
 }
+.show-marketing-options-container {
+	margin-top: 10px;
+}
+.show-marketing-options {
+	cursor: pointer;
+	font-size: 12px;
+}
+.show-marketing-options:hover {
+	color: #000;
+	background-color: transparent;
+}
+.box-hide {
+	display: none;
+}
+.marketing-overview-show-label {
+	display: block;
+	margin: 10px 0;
+	font-size: 12px;
+}
