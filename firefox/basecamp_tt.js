@@ -133,7 +133,7 @@
                             username = optionStorage["user"];
                             password = optionStorage["pass"];
                             headers.set('Authorization', 'Basic ' + btoa(username + ":" + password));
-                            fetch(url + "basecamp-extension-api/?marketingHoursInfo=1", {
+                            fetch(url + "basecamp-extension-api/?marketingHoursInfo=" + basecamp_tt.getNumberFromItemId(str), {
                                 headers: headers
                             })
                             .then(function(response) {
@@ -143,29 +143,27 @@
                                 return response.json();
                             })
                             .then(function(json) {
-                                itemsJson = json;  
-                                for(i in itemsJson) {
-                                    includedProjectsArray = itemsJson[i].includedProjects.split(",");
-                                    if(includedProjectsArray.includes(basecamp_tt.getNumberFromItemId(str))) {
-                                        maxHours.value = itemsJson[i].maxHours;
-                                        includedProjects.value = itemsJson[i].includedProjects;
-                                        minutesToTwoDecimal = parseFloat(((itemsJson[i].minutes)/60).toFixed(2));
-                                        marketingProgressMax.textContent = itemsJson[i].maxHours;
-                                        marketingProgressValue.textContent = minutesToTwoDecimal;
-                                        progressBar.setAttribute("max", itemsJson[i].maxHours);
-                                        progressBar.setAttribute("value", minutesToTwoDecimal);
-                                        dangerValue = (100/itemsJson[i].maxHours) * minutesToTwoDecimal;
-                                        overviewName.value = itemsJson[i].overviewName;
-                                        showInOverview.checked = (itemsJson[i].showInOverview === "true") ? true : (itemsJson[i].showInOverview === "false") ? false : false;
-                                        if(minutesToTwoDecimal >= itemsJson[i].maxHours) {
-                                            progressValuesText.forEach(function(span) {
-                                                span.style.color = "#f00";
-                                            });
-                                        } else if(dangerValue >= 80) {
-                                            progressValuesText.forEach(function(span) {
-                                                span.style.color = "#f29700";
-                                            });
-                                        }
+                                itemsJson = json;
+                                includedProjectsArray = itemsJson.includedProjects.split(",");
+                                if(includedProjectsArray.includes(basecamp_tt.getNumberFromItemId(str))) {
+                                    maxHours.value = itemsJson.maxHours;
+                                    includedProjects.value = itemsJson.includedProjects;
+                                    minutesToTwoDecimal = parseFloat(itemsJson.minutes);
+                                    marketingProgressMax.textContent = itemsJson.maxHours;
+                                    marketingProgressValue.textContent = minutesToTwoDecimal;
+                                    progressBar.setAttribute("max", itemsJson.maxHours);
+                                    progressBar.setAttribute("value", minutesToTwoDecimal);
+                                    dangerValue = (100/itemsJson.maxHours) * minutesToTwoDecimal;
+                                    overviewName.value = itemsJson.overviewName;
+                                    showInOverview.checked = (itemsJson.showInOverview === "true") ? true : (itemsJson.showInOverview === "false") ? false : false;
+                                    if(minutesToTwoDecimal >= itemsJson.maxHours) {
+                                        progressValuesText.forEach(function(span) {
+                                            span.style.color = "#f00";
+                                        });
+                                    } else if(dangerValue >= 80) {
+                                        progressValuesText.forEach(function(span) {
+                                            span.style.color = "#f29700";
+                                        });
                                     }
                                 }
                             })
