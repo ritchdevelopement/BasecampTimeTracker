@@ -26,7 +26,7 @@
                 taskHTML = `<tr id="${task.id}" class="task">
                     <td id="task-control-${task.id}"><span class="icon ${task.paused?'play':'pause'}"></span></td>
                     <td id="task-timer-${task.id}">${basecamp_tt_popup.showTaskTimer(task)}</td>
-                    <td id="task-url-${task.id}" class="task-text${task.url?"":" no-link"}">${task.name}</a></td>
+                    <td id="task-url-${task.id}" class="task-text${task.url?"":" no-link"}">${task.name}<div class="task-company-project">${task.company?task.company + " - " + task.project:""}</div></td>
                     <td id="task-timer-edit-${task.id}">${task.url?"<span class='icon edit'>":""}</span></td>
                     <td id="task-timer-remove-${task.id}"><span class="icon remove"></span></td>
                 </tr>${task.url?taskEditHTML:""}`;

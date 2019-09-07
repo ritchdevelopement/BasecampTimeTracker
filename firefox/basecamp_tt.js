@@ -22,7 +22,7 @@
         addMarketingBox: function() {
             var marketingInfoHTML, sidebar, str, actualMonth, monthsArray, date, monthsName, projectId;
             str = window.location.href;
-            if(basecamp_tt.getNumberFromItemId(str)) {
+            if(basecamp_tt.getNumberFromItemId(str) && document.querySelector("#sidebar")) {
                 projectId = basecamp_tt.getNumberFromItemId(str);
                 monthsArray    = ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
                 date = new Date();
@@ -55,18 +55,21 @@
             }
         },
         showHideMarketingBox: function() {
-            var showMarketingOption, marketingOptions;
-            showMarketingOption = document.querySelector("#show-marketing-options");
-            showMarketingOption.addEventListener("click", function() {
-                marketingOptions = document.querySelector("#marketing-options");
-                if(marketingOptions.classList.contains("box-hide")) {
-                    marketingOptions.classList.remove("box-hide");
-                    showMarketingOption.innerHTML = "Verstecke Optionen &#x25B2;";
-                } else {
-                    marketingOptions.classList.add("box-hide");
-                    showMarketingOption.innerHTML = "Zeige Optionen &#x25BC;";
-                }
-            });
+            var showMarketingOption, marketingOptions, str;
+            str = window.location.href;
+            if(basecamp_tt.getNumberFromItemId(str)) {
+                showMarketingOption = document.querySelector("#show-marketing-options");
+                showMarketingOption.addEventListener("click", function() {
+                    marketingOptions = document.querySelector("#marketing-options");
+                    if(marketingOptions.classList.contains("box-hide")) {
+                        marketingOptions.classList.remove("box-hide");
+                        showMarketingOption.innerHTML = "Verstecke Optionen &#x25B2;";
+                    } else {
+                        marketingOptions.classList.add("box-hide");
+                        showMarketingOption.innerHTML = "Zeige Optionen &#x25BC;";
+                    }
+                });
+            }
         },
         saveMarketingInfo: function() {
             var maxHours, includedProjects, overviewName, showInOverview, saveButton, str, headers, optionStorage, url, username, password;
@@ -256,7 +259,7 @@
             }
         },
         addTaskToTimeTracker: function() {
-            var addButtons, taskId, taskExtractedNum, taskName, tasks, taskStoragePromise, i, taskUrl, taskItem;
+            var addButtons, taskId, taskExtractedNum, taskName, tasks, taskStoragePromise, i, taskUrl, taskItem, taskCompany, taskProject;
             addButtons = document.querySelectorAll(".icon.add");
             addButtons.forEach(function(addButton) {
                 addButton.onclick = function() {
@@ -265,6 +268,8 @@
                     taskName = document.querySelector("#item_wrap_" + taskExtractedNum).textContent;
                     taskItem = document.querySelector("body.todos #item_" + taskExtractedNum);
                     taskItem.style.backgroundImage = "linear-gradient(to right, #72b740, white 1.5%)";
+                    taskCompany = document.querySelector("#Header h1 span").textContent;
+                    taskProject = document.querySelector("#Header h1").childNodes[0].textContent;
                     taskUrl = window.location.href;
                     taskStoragePromise = basecamp_tt.getTaskStorage();
                     taskStoragePromise.then(function(res) {
@@ -275,7 +280,7 @@
                                 return;
                             }
                         }
-                        tasks.push(basecamp_tt.createTaskObject(taskExtractedNum, taskName, taskUrl));
+                        tasks.push(basecamp_tt.createTaskObject(taskExtractedNum, taskName, taskUrl, taskCompany, taskProject));
                         basecamp_tt.setTaskStorage(tasks);
                     }).catch(function(err) {
                         console.log(err);
@@ -551,7 +556,7 @@
                 }
             }
         },
-        createTaskObject: function(taskId, taskName, taskUrl) {
+        createTaskObject: function(taskId, taskName, taskUrl, taskCompany, taskProject) {
             var task;
             task = {
                 id: taskId,
@@ -559,7 +564,9 @@
                 time: 0,
                 paused: false,
                 url: taskUrl,
-                description: ""
+                description: "",
+                company: taskCompany,
+                project: taskProject
             }
             return task;
         },

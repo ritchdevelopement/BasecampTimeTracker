@@ -60,6 +60,10 @@ input {
 	color: #72b740;
 	white-space: nowrap;
 }
+.task-text:hover {
+    text-shadow: 1px 1px 27px #72b740;
+    transition: 0.2s;
+}
 .no-link {
 	cursor: inherit;
 	color: inherit;
@@ -73,4 +77,10 @@ tfoot td {
 	text-align: right;
 	cursor: pointer;
 	float: right;
+}
+.task-company-project {
+	font-size: 11px;
+	margin-top: 5px;
+	color: #000;
+	top: 18px;
 }

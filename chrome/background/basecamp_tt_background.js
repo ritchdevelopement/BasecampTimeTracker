@@ -39,7 +39,7 @@
         },
         initTaskStorage: function() {
             chrome.storage.local.get("taskStorage", function(res) {
-                if(!res.taskStorage) basecamp_tt_pp.setOptionsStorage([]);
+                if(!res.taskStorage) basecamp_tt_pp.setTaskStorage([]);
             });
         },
         initOptionStorage: function() {
