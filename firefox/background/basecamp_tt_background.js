@@ -1,79 +1,75 @@
 (function() {
     "use strict";
     var basecamp_tt_pp = {
-        init: function() {
+        init: () => {
             basecamp_tt_pp.initTaskStorage();
             basecamp_tt_pp.initOptionStorage();
-            basecamp_tt_pp.increaseTimerInterval();
-            basecamp_tt_pp.setActiveTimerBadgeText();
+            basecamp_tt_pp.getTimerInterval();
+            basecamp_tt_pp.setActiveTimersBadge();
         },
-        increaseTimerInterval: function() {
-            var interval, taskStoragePromise, tasks, i;
-            interval = setInterval(function() {
-                taskStoragePromise = basecamp_tt_pp.getTaskStorage();
-                taskStoragePromise.then(function(res) {
-                    tasks = res.taskStorage;
-                    for(i in tasks) {
-                        if(!tasks[i].paused){ 
-                            tasks[i].time += 1;
+        getTimerInterval: () => {
+            return setInterval(() => {
+                basecamp_tt_pp.getTaskStorage().then((taskStorage) => {
+                    for(var i in taskStorage) {
+                        if(!taskStorage[i].paused) {
+                            taskStorage[i].time += 1;
                         }
-                    }       
-                    basecamp_tt_pp.setTaskStorage(tasks);
-                }).catch(function(err) {
-                    console.log(err);
-                });
-            }, 1000);            
-            return interval;
-        },
-        setActiveTimerBadgeText: function() {
-            var taskStorage, activeTimer, i;
-            browser.browserAction.setBadgeText({text: "0"});
-            browser.browserAction.setBadgeBackgroundColor({color: "#FF0000"});
-            browser.browserAction.setBadgeTextColor({color: "#FFF"});
-            browser.storage.onChanged.addListener(function(changes, area) {
-                if(changes.taskStorage) {
-                    activeTimer = 0;
-                    taskStorage = changes.taskStorage.newValue;
-                    for(i in taskStorage) {
-                        activeTimer += 1;
                     }
-                    browser.browserAction.setBadgeText({text: activeTimer.toString()});
+                    basecamp_tt_pp.setTaskStorage(taskStorage);
+                }).catch((error) => {
+                    console.log(error);
+                });
+            }, 1000);
+        },
+        setActiveTimersBadge: () => {
+            browser.browserAction.setBadgeText({ text: "0" });
+            browser.browserAction.setBadgeBackgroundColor({ color: "#FF0000" });
+            browser.browserAction.setBadgeTextColor({ color: "#FFF" });
+            browser.storage.onChanged.addListener((changes, area) => {
+                if(changes.taskStorage) {
+                    var newTaskStorage = changes.taskStorage.newValue;
+                    var numberofTimers = newTaskStorage.length;
+                    browser.browserAction.setBadgeText({ text: numberofTimers.toString() });
                 }
             });
         },
-        initTaskStorage: function() {
-            var taskStoragePromise;
-            taskStoragePromise = basecamp_tt_pp.getTaskStorage();
-            taskStoragePromise.then(function(res) {
-                if(!res.taskStorage) basecamp_tt_pp.setTaskStorage([]);
-            }).catch(function(err) {
-                console.log(err);
+        initTaskStorage: () => {
+            basecamp_tt_pp.getTaskStorage().then((taskStorage) => {
+                if(!taskStorage) {
+                    basecamp_tt_pp.setTaskStorage([]);
+                }
+            }).catch((error) => {
+                console.log(error);
             });
         },
-        initOptionStorage: function() {
-            var optionStoragePromise;
-            optionStoragePromise = basecamp_tt_pp.getOptionsStorage();
-            optionStoragePromise.then(function(res) {
-                if(!res.optionStorage) basecamp_tt_pp.setOptionsStorage([]);
-            }).catch(function(err) {
-                console.log(err);
+        initOptionStorage: () => {
+            basecamp_tt_pp.getOptionStorage().then((optionStorage) => {
+                if(!optionStorage) {
+                    basecamp_tt_pp.setOptionStorage([]);
+                }
+            }).catch((error) => {
+                console.log(error);
             });
         },
-        setOptionsStorage: function(optionsArray) {
+        setOptionStorage: (optionsArray) => {
             browser.storage.local.set({
                 optionStorage: optionsArray
             });
         },
-        setTaskStorage: function(taskArray) {
+        setTaskStorage: (taskArray) => {
             browser.storage.local.set({
                 taskStorage: taskArray
             });
         },
-        getOptionsStorage: function() {
-            return browser.storage.local.get("optionStorage");
+        getOptionStorage: () => {
+            return browser.storage.local.get("optionStorage").then((res) => {
+                return res.optionStorage;
+            });
         },
-        getTaskStorage: function() {
-            return browser.storage.local.get("taskStorage");
+        getTaskStorage: () => {
+            return browser.storage.local.get("taskStorage").then((res) => {
+                return res.taskStorage;
+            });
         }
     }
     basecamp_tt_pp.init();

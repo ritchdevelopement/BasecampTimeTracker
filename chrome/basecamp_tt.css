@@ -18,7 +18,7 @@ body.todos div.list_with_time_tracking .done div.item div.content {
 	filter: grayscale(75%);
 	transition: 0.5s;
 }
-body.todos div.item div.controls { width: 95px !important; }
+body.todos div.item div.controls { width: 95px !important; top: 0; }
 body.todos div.list div.item div.controls a.time_tracking_control span.sprite { padding-top: 25px !important; }
 
 .ajax-loader {
@@ -120,4 +120,13 @@ progress {
 }
 .marketing-info-box .marketing-overview-show-label > input {
 	width: auto;
+}
+.error-message {
+	background-color: #8a3131;
+	color: #fff;
+	padding: 5px;
+}
+
+.error-message + .error-message {
+	display: none;
 }

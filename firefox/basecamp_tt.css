@@ -119,3 +119,12 @@ progress {
 	margin: 10px 0;
 	font-size: 12px;
 }
+.error-message {
+	background-color: #8a3131;
+	color: #fff;
+	padding: 5px;
+}
+
+.error-message + .error-message {
+	display: none;
+}

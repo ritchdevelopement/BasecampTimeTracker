@@ -1,39 +1,38 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="basecamp_tt_popup.css"/>
-  </head>
-<body>
-  <div class="popup-header">
-    <img class="logo" src="../icons/basecamp-48.png" width="40px"/>
-    <p class="logo-text">Basecamp<br/>Time<br/>Tracker</p>
-  </div>
-  <div class="popup-content">
-    <table cellspacing="10" id="popup-task-table">
-      <thead>
-        <tr>
-          <th></th>
-          <th>Time</th>
-          <th>Task</th>
-          <th></th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-      </tbody>
-      <tfoot>
-          <tr>
-            <td colspan="4"><input id="input-task-name" class="task-name" placeholder="Please input task name!"></td>
-            <td style="text-align: center;"><span id="add-task-button" class="icon add"></span></td>
-          </tr>
-        </tfoot>
-    </table>
-  </div>
-  <div class="popup-footer">
-    <span id="version-text" class="version-text"></span>
-    <span id="options" class="options">&#9881;</span>
-  </div>
-  <script src="basecamp_tt_popup.js"></script>
-</body>
+    <head>
+        <meta charset="utf-8">
+        <link rel="stylesheet" href="basecamp_tt_popup.css" />
+    </head>
+    <body>
+        <header>
+            <img class="logo" src="../icons/basecamp-48.png" width="40px" />
+            <p class="logo-text">Basecamp<br />Time<br />Tracker</p>
+        </header>
+        <main>
+            <table cellspacing="10">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Time</th>
+                        <th>Task</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="task-table">
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3"><input id="input-task-name" class="task-name" placeholder="Please input task name!"></td>
+                        <td style="text-align: center;"><span id="add-task-button" class="icon add"></span></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </main>
+        <footer>
+            <span id="version-text" class="version-text"></span>
+            <span id="options" class="options">&#9881;</span>
+        </footer>
+        <script src="basecamp_tt_popup.js"></script>
+    </body>
 </html>

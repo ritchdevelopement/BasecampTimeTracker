@@ -1,32 +1,47 @@
 <!DOCTYPE html>
-
 <html>
-  <head>
-    <meta charset="utf-8"/>
-    <link rel="stylesheet" href="options.css"/>
-  </head>
-
-  <body>
-    <div class="options-container">
-      <div>
-      <label>Basecamp API Url*</label>
-      <input type="text" id="option-1" required/>
-    </div>
-    <div>
-      <label>Username*</label>
-      <input type="text" id="option-2" required/>
-    </div>
-    <div>
-      <label>Password*</label>
-      <input type="password" id="option-3" required/>
-    </div>
-    <div>
-      <label>Exluded project ids (optional)</label>
-      <input type="text" id="option-4" placeholder="14283414,28142943,32143434"/>
-      <img src="../images/example-project-id.png"/>
-    </div>
-    <button id="save-button" class="save-button">Save</button>
-    <script src="options.js"></script>
-    </div>
-  </body>
+    <head>
+        <meta charset="utf-8" />
+        <link rel="stylesheet" href="options.css" />
+    </head>
+    <body>
+        <form id="options-form" class="options-form">
+            <fieldset>
+                <legend>API options</legend>
+                <div class="field url">
+                    <label for="url">API Url</label>
+                    <input type="text" id="url" />
+                </div>
+                <div class="field username">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" />
+                </div>
+                <div class="field password">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" />
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Time info label for todo items and todo item lists</legend>
+                <div class="field checkbox">
+                    <input type="checkbox" id="enableTimeInfoLabels" />
+                    <label for="enableTimeInfoLabels">Enable <span class="required">(Requires API options set)</span></label>
+                </div>
+                <div class="field excluded">
+                    <label for="excluded">Exluded project ids</label>
+                    <input type="text" id="excluded" placeholder="14283414,28142943,32143434" />
+                    <img src="../images/example-project-id.png" />
+                </div>
+            </fieldset>
+            <fieldset>
+                <legend>Marketing info box</legend>
+                <div class="field checkbox">
+                    <input type="checkbox" id="enableMarketingInfoBox" />
+                    <label for="enableMarketingInfoBox">Enable <span class="required">(Requires API options set)</span></label>
+                </div>
+                <button id="save-button" class="save-button" type="submit"><b>Save</b></button>
+            </fieldset>
+        </form>
+        <script src="options.js"></script>
+    </body>
 </html>

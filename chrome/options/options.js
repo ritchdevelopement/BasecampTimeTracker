@@ -3,42 +3,53 @@
     var basecamp_options = {
         init: function() {
             basecamp_options.loadOptions();
-            basecamp_options.saveOptions();
+            basecamp_options.onOptionsFormSubmit();
         },
-        loadOptions: function() {
-            var option1, option2, option3, option4, optionStorage;
-            option1 = document.querySelector("#option-1");
-            option2 = document.querySelector("#option-2");
-            option3 = document.querySelector("#option-3");
-            option4 = document.querySelector("#option-4");
-            chrome.storage.local.get("optionStorage", function(option) {
-                optionStorage = option.optionStorage;
-                option1.value = optionStorage["url"] || "";
-                option2.value = optionStorage["user"] || "";
-                option3.value = optionStorage["pass"] || "";
-                option4.value = optionStorage["excl"] || "";
+        loadOptions: () => {
+            var optionFormElements = basecamp_options.getOptionsFormElements()
+            basecamp_options.getOptionStorage((optionStorage) => {
+                optionFormElements.enableTimeInfoLabelsCheckbox.checked = optionStorage.enableTimeInfoLabels || false;
+                optionFormElements.enableMarketingInfoBoxCheckbox.checked = optionStorage.enableMarketingInfoBox || false;
+                optionFormElements.urlInput.value = optionStorage.url || "";
+                optionFormElements.usernameInput.value = optionStorage.username || "";
+                optionFormElements.passwordInput.value = optionStorage.password || "";
+                optionFormElements.excludedProjectsInput.value = optionStorage.excludedProjects || "";
             });
         },
-        saveOptions: function() {
-            var option1, option2, option3, option4, saveButton;
-            option1 = document.querySelector("#option-1");
-            option2 = document.querySelector("#option-2");
-            option3 = document.querySelector("#option-3");
-            option4 = document.querySelector("#option-4");
-            saveButton = document.querySelector("#save-button");
-            saveButton.addEventListener("click", function() {
-                var options = {
-                    url: option1.value,
-                    user: option2.value,
-                    pass: option3.value,
-                    excl: option4.value
-                }
-                basecamp_options.setOptionsStorage(options);
-                saveButton.innerHTML = "Saved!";
+        onOptionsFormSubmit: () => {
+            var optionsForm = document.querySelector("#options-form");
+            optionsForm.addEventListener("submit", (event) => {
+                event.preventDefault();
+                var optionFormElements = basecamp_options.getOptionsFormElements();
+                basecamp_options.setOptionStorage({
+                    enableTimeInfoLabels: optionFormElements.enableTimeInfoLabelsCheckbox.checked,
+                    enableMarketingInfoBox: optionFormElements.enableMarketingInfoBoxCheckbox.checked,
+                    url: optionFormElements.urlInput.value,
+                    username: optionFormElements.usernameInput.value,
+                    password: optionFormElements.passwordInput.value,
+                    excludedProjects: optionFormElements.excludedProjectsInput.value,
+                });
+                optionFormElements.saveButton.textContent = "Saved!";
             });
         },
-        setOptionsStorage: function(optionsArray) {
-            chrome.storage.local.set({optionStorage: optionsArray}, function() {
+        getOptionsFormElements: () => {
+            return {
+                enableTimeInfoLabelsCheckbox: document.querySelector("#enableTimeInfoLabels"),
+                enableMarketingInfoBoxCheckbox: document.querySelector("#enableMarketingInfoBox"),
+                urlInput: document.querySelector("#url"),
+                usernameInput: document.querySelector("#username"),
+                passwordInput: document.querySelector("#password"),
+                excludedProjectsInput: document.querySelector("#excluded"),
+                saveButton: document.querySelector("#save-button"),
+            }
+        },
+        getOptionStorage: (callback) => {
+            chrome.storage.local.get("optionStorage", (res) => {
+                callback(res.optionStorage);
+            });
+        },
+        setOptionStorage: (optionsArray) => {
+            chrome.storage.local.set({ optionStorage: optionsArray }, () => {
             });
         }
     }

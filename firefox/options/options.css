@@ -1,25 +1,46 @@
-.save-button {
-    text-align: center;
-}
-
-.options-container {
+form {
     margin-top: 10px;
+    padding: 0;
 }
 
-.options-container > div {
-	margin-bottom: 10px;
+legend {
+    font-size: 14px;
 }
 
-.options-container > div > input {
-    width: 100%;
+input[type="checkbox"] {
+    margin: 0 1px 0 0;
 }
 
-.options-container > button {
-	background-color: #72b740;
-	color: #fff;
-	border: 0;
-    padding: 3px 15px;
+.options-form fieldset {
     margin-bottom: 10px;
+}
+
+.field {
+    margin-bottom: 5px;
+}
+
+input[type="text"],
+input[type="password"] {
     width: 100%;
+}
+
+.required {
+    color: red;
+}
+
+.save-button {
+    background-color: #72b740;
+    border: 2px solid #72b740;
+	color: #fff;
+    padding: 3px 15px;
+    margin-top: 10px;
+    width: 20%;
     cursor: pointer;
+    text-align: center;
+    transition: 0.3s;
+}
+
+.save-button:hover {
+    background-color: #fff;
+    color: #72b740;
 }

@@ -23,12 +23,8 @@ input {
 .icon.play { background-image: url("../images/play_button.png"); }
 .icon.remove { background-image: url("../images/remove_button.png"); }
 .icon.add { background-image: url("../images/add_button.png"); }
-.icon.edit { background-image: url("../images/edit_button.png"); }
 .icon.save { background-image: url("../images/save_button.png"); }
-.icon.check { 
-	background-image: url("../images/check_icon.png");
-	cursor: inherit;
-}
+
 .icon.check:hover { filter: none; }
 .icon:hover {
 	filter: grayscale(75%);
@@ -44,13 +40,13 @@ input {
 	line-height: 15px;
 	margin-bottom: 0; 
 }
-.popup-header {
+header {
 	border-bottom: 3px solid #72b740;
 	width: 126px;
 	margin: 0px auto;
 	padding-bottom: 5px;
 }
-.popup-footer { text-align: center; }
+footer { text-align: center; }
 .version-text {
 	text-align: center;
 	font-size: 10px;
@@ -70,7 +66,7 @@ input {
 }
 .hide { display: none; }
 tfoot td {
-	border-top: 3px solid #72b740;
+	border-top: 3px solid #72b740; 
 	padding-top: 15px;
 }
 .options {
