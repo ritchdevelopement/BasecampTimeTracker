@@ -4,6 +4,7 @@
         init: () => {
             basecamp_tt_pp.initTaskStorage();
             basecamp_tt_pp.initOptionStorage();
+            basecamp_tt_pp.initFavouriteStorage();
             basecamp_tt_pp.getTimerInterval();
             basecamp_tt_pp.setActiveTimersBadge();
         },
@@ -51,6 +52,15 @@
                 console.log(error);
             });
         },
+        initFavouriteStorage: () => {
+            basecamp_tt_pp.getFavouriteStorage().then((favouriteStorage) => {
+                if(!favouriteStorage) {
+                    basecamp_tt_pp.setFavouriteStorage([]);
+                }
+            }).catch((error) => {
+                console.log(error);
+            });
+        },
         setOptionStorage: (optionsArray) => {
             browser.storage.local.set({
                 optionStorage: optionsArray
@@ -61,6 +71,11 @@
                 taskStorage: taskArray
             });
         },
+        setFavouriteStorage: (favouriteArray) => {
+            browser.storage.local.set({
+                favouriteStorage: favouriteArray
+            });
+        },
         getOptionStorage: () => {
             return browser.storage.local.get("optionStorage").then((res) => {
                 return res.optionStorage;
@@ -69,6 +84,11 @@
         getTaskStorage: () => {
             return browser.storage.local.get("taskStorage").then((res) => {
                 return res.taskStorage;
+            });
+        },
+        getFavouriteStorage: () => {
+            return browser.storage.local.get("favouriteStorage").then((res) => {
+                return res.favouriteStorage;
             });
         }
     }

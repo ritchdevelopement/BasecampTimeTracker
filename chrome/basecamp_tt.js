@@ -43,7 +43,7 @@
                         if(!excludedProjects.includes(projectId) && document.querySelector(".list_title")) {
                             var listTitle = document.querySelector(".list_title");
                             var listTitleId = basecamp_tt.extractNumber(listTitle.id);
-                            var uncompletedTasks = document.querySelector("#list_" + listTitleId + "_title + .items_wrapper .sprite.timeclock.on");
+                            var uncompletedTasks = document.querySelector("#list_" + listTitleId + "_title ~ .items_wrapper .sprite.timeclock.on");
                             var completedTasks = document.querySelector("#list_" + listTitleId + "_title ~ .completed_items_todo_list.done .sprite.timeclock.on");
                             if(uncompletedTasks || completedTasks) {
                                 listTitle.insertAdjacentHTML("beforeend", basecamp_tt.getAjaxLoaderHtml(true));
@@ -327,21 +327,23 @@
         },
         onRemoveTaskTimerRemoveMark: () => {
             chrome.storage.onChanged.addListener((changes, area) => {
-                var oldTaskStorage = changes.taskStorage.oldValue, newTaskStorage = changes.taskStorage.newValue;
-                if(newTaskStorage.length < oldTaskStorage.length) {
-                    var taskElement;
-                    oldTaskStorage.forEach((task) => {
-                        if(task.url && document.querySelector("#item_" + task.id)) {
-                            taskElement = document.querySelector("#item_" + task.id);
-                            taskElement.style.backgroundImage = "none";
-                        }
-                    });
-                    newTaskStorage.forEach((task) => {
-                        if(task.url && document.querySelector("#item_" + task.id)) {
-                            taskElement = document.querySelector("#item_" + task.id);
-                            taskElement.style.backgroundImage = "linear-gradient(to right, #72b740, white 1.5%)";
-                        }
-                    });
+                if(changes.taskStorage) {
+                    var oldTaskStorage = changes.taskStorage.oldValue, newTaskStorage = changes.taskStorage.newValue;
+                    if(newTaskStorage.length < oldTaskStorage.length) {
+                        var taskElement;
+                        oldTaskStorage.forEach((task) => {
+                            if(task.url && document.querySelector("#item_" + task.id)) {
+                                taskElement = document.querySelector("#item_" + task.id);
+                                taskElement.style.backgroundImage = "none";
+                            }
+                        });
+                        newTaskStorage.forEach((task) => {
+                            if(task.url && document.querySelector("#item_" + task.id)) {
+                                taskElement = document.querySelector("#item_" + task.id);
+                                taskElement.style.backgroundImage = "linear-gradient(to right, #72b740, white 1.5%)";
+                            }
+                        });
+                    }
                 }
             });
         },
@@ -481,7 +483,7 @@
                 if(task.querySelector(".sprite.timeclock.on")) {
                     var listTitle = document.querySelector(".list_title");
                     var listTitleId = basecamp_tt.extractNumber(listTitle.id);
-                    var uncompletedTasks = document.querySelector("#list_" + listTitleId + "_title + .items_wrapper .sprite.timeclock.on");
+                    var uncompletedTasks = document.querySelector("#list_" + listTitleId + "_title ~ .items_wrapper .sprite.timeclock.on");
                     var completedTasks = document.querySelector("#list_" + listTitleId + "_title ~ .completed_items_todo_list.done .sprite.timeclock.on");
                     if(uncompletedTasks || completedTasks) {
                         extractedTaskIds.push(basecamp_tt.extractNumber(task.id));

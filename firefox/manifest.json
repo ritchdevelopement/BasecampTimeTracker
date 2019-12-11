@@ -4,7 +4,7 @@
     "name": "BasecampTimeTracker",
     "description": "Adds the possibility to track times for tasks in basecamp classic.",
     "homepage_url": "https://github.com/ritchdevelopement",
-    "version": "1.7.2",
+    "version": "1.8.0",
     "browser_specific_settings": {
         "gecko": {
             "id": "ritchdevelopement@github.com"
@@ -27,7 +27,9 @@
         "images/remove_button.png",
         "images/add_button.png",
         "images/minus_button.png",
-        "images/example-project-id.png"
+        "images/example-project-id.png",
+        "images/favourite_button.png",
+        "images/favourite_button_filled.png"
     ],
     "browser_action": {
         "default_icon": "icons/basecamp-48.png",

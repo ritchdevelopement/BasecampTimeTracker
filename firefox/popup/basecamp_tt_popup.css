@@ -21,19 +21,22 @@ input {
 }
 .icon.pause { background-image: url("../images/pause_button.png"); }
 .icon.play { background-image: url("../images/play_button.png"); }
-.icon.remove { background-image: url("../images/remove_button.png"); }
+.icon.remove { 
+	background-image: url("../images/remove_button.png"); 
+	float: right; 
+}
 .icon.add { background-image: url("../images/add_button.png"); }
 .icon.save { background-image: url("../images/save_button.png"); }
+.icon.favourise { background-image: url("../images/favourite_button.png"); }
+.icon.favourised { background-image: url("../images/favourite_button_filled.png"); }
 
 .icon.check:hover { filter: none; }
 .icon:hover {
 	filter: grayscale(75%);
 	transition: 0.5s;
 }
-.logo { 
-	float: left; 
-	width: 45px;
-	margin-right: 10px;
+.task-control > span:not(:first-child) {
+	margin-left: 10px;
 }
 .logo-text { 
 	font-size: 15px;
@@ -41,10 +44,49 @@ input {
 	margin-bottom: 0; 
 }
 header {
-	border-bottom: 3px solid #72b740;
-	width: 126px;
-	margin: 0px auto;
-	padding-bottom: 5px;
+	display: flex;
+}
+.nav {
+	padding: 10px 0 10px 0;
+	margin: 0;
+	list-style-type: none;
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    justify-content: center;
+}
+.nav li:not(:first-child) {
+	margin-left: 10px;
+}
+.nav li a {
+	color: #fff;
+	text-decoration: none;
+	padding: 5px;
+	background-color: #72b740;
+	cursor: pointer;
+	transition: 0.5s;
+	min-width: 0;
+    border-radius: 5px;
+    width: 100px;
+    display: inline-flex;
+    justify-content: center;
+}
+.nav li.active a {
+	background-color: #416826;
+	border-radius: 10px;
+}
+.nav li a:hover {
+	background-color: #416826;
+	border-radius: 10px;
+}
+.right {
+	margin-left: auto;
+	display: flex;
+	justify-content: end;
+	align-items: center; 
+}
+.left {
+	width: auto;
 }
 footer { text-align: center; }
 .version-text {
